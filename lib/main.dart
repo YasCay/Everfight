@@ -1,39 +1,41 @@
-import 'package:flame/components.dart';
-import 'package:flame/events.dart';
+import 'package:everfight/screens/achievements.dart';
+import 'package:everfight/screens/game.dart';
+import 'package:everfight/screens/main_menu.dart';
+import 'package:everfight/screens/unlockables.dart';
 import 'package:flame/game.dart';
-import 'package:flutter/material.dart';
+import 'package:flame/input.dart';
+import 'package:flame/flame.dart';
+import 'package:flutter/material.dart' hide Route;
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Flame.device.fullScreen();
+  await Flame.device.setLandscape();
+
   runApp(
-    GameWidget(
-      game: FlameGame(world: MyWorld()),
+    MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'Everfight',
+      theme: ThemeData.dark(),
+      home: GameWidget(game: RogueliteGame()),
     ),
   );
 }
 
-class MyWorld extends World {
-  @override
-  Future<void> onLoad() async {
-    add(Player(position: Vector2(0, 0)));
-  }
-}
-
-class Player extends SpriteComponent with TapCallbacks {
-  Player({super.position}) :
-    super(size: Vector2.all(200), anchor: Anchor.center);
+class RogueliteGame extends FlameGame with HasKeyboardHandlerComponents {
+  late RouterComponent router;
 
   @override
   Future<void> onLoad() async {
-    sprite = await Sprite.load('player.png');
-  }
-  
-  @override
-  void onTapUp(TapUpEvent event) {
-    size += Vector2.all(50);
-  }
-
-  @override
-  void onTapDown(TapDownEvent event) {
-    size -= Vector2.all(50);
+    router = RouterComponent(
+      initialRoute: 'menu',
+      routes: {
+        'menu': Route(MainMenu.new),
+        'achievements': Route(AchievementsScene.new),
+        'unlockables': Route(UnlockablesScene.new),
+        'game': Route(GameScene.new),
+      },
+    );
+    add(router);
   }
 }
