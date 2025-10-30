@@ -38,7 +38,7 @@ class RogueliteGame extends FlameGame with HasKeyboardHandlerComponents {
   final List<Monster> playerTeam = [];
   final List<Monster> bosses = [];
   int currentBossIndex = 0;
-  GameState state = GameState.idle;
+  GameState state = GameState.inMenues;
 
   @override
   Future<void> onLoad() async {
@@ -57,10 +57,10 @@ class RogueliteGame extends FlameGame with HasKeyboardHandlerComponents {
 
   void _initMonsters() {
     bosses.addAll([
-      Monster(name: 'Flamurai', baseHealth: 120, baseAttack: 20, element: Element.fire, imagePath: 'boss_fire.jpeg'),
-      Monster(name: 'Frostfang', baseHealth: 150, baseAttack: 25, element: Element.water, imagePath: 'boss_water.jpeg'),
-      Monster(name: 'Terra Titan', baseHealth: 180, baseAttack: 30, element: Element.earth, imagePath: 'boss_earth.jpeg'),
-      Monster(name: 'Birdinator', baseHealth: 180, baseAttack: 30, element: Element.air, imagePath: 'boss_air.jpeg'),
+      Monster(name: 'Flamurai', baseHealth: 120, baseAttack: 2, element: Element.fire, imagePath: 'boss_fire.jpeg'),
+      Monster(name: 'Frostfang', baseHealth: 150, baseAttack: 10, element: Element.water, imagePath: 'boss_water.jpeg'),
+      Monster(name: 'Terra Titan', baseHealth: 180, baseAttack: 20, element: Element.earth, imagePath: 'boss_earth.jpeg'),
+      Monster(name: 'Birdinator', baseHealth: 180, baseAttack: 20, element: Element.air, imagePath: 'boss_air.jpeg'),
     ]);
   }
 

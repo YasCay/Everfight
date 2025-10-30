@@ -1,3 +1,4 @@
+import 'package:everfight/game/game_state.dart';
 import 'package:everfight/main.dart';
 import 'package:everfight/widgets/rectangle_button.dart';
 import 'package:flame/components.dart';
@@ -54,9 +55,12 @@ class MainMenu extends Component with HasGameReference<RogueliteGame> {
     final startY = (size.y - totalHeight) / 2 + 40;
 
     final buttons = <Map<String, VoidCallback>>[
-      {'Start Run': () => game.router.pushNamed('game')},
-      {'Achievements': () => game.router.pushNamed('achievements')},
-      {'Unlockables': () => game.router.pushNamed('unlockables')},
+      {'Start Run': () => {
+        game.router.pushReplacementNamed('game'),
+        game.state = GameState.idle
+      }},
+      {'Achievements': () => game.router.pushReplacementNamed('achievements')},
+      {'Unlockables': () => game.router.pushReplacementNamed('unlockables')},
     ];
 
     for (int i = 0; i < buttons.length; i++) {

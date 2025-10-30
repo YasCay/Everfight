@@ -17,6 +17,10 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
       game.showMonsterSelection();
     }
 
+    for (final boss in game.bosses) {
+      boss.resetHealth();
+    }
+
     boss = game.bosses[game.currentBossIndex];
 
     add(TextComponent(
@@ -41,6 +45,10 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
   @override
   void update(double dt) {
     super.update(dt);
+
+    if (game.state == GameState.inMenues) {
+      return;
+    }
 
     timer += dt;
     if (timer > 1.0) {
@@ -87,9 +95,11 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
     game.healTeam();
 
     if (game.currentBossIndex >= game.bosses.length) {
-      game.router.pushNamed('menu');
+      game.router.pushReplacementNamed('menu');
+      game.state = GameState.inMenues;
     } else {
-      // Show reward overlay
+      // Show reward overlay and set next boss
+      boss = game.bosses[game.currentBossIndex];
       game.state = GameState.selecting;
       game.showMonsterSelection();
     }
@@ -99,6 +109,7 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
     game.state = GameState.defeat;
     game.currentBossIndex = 0;
     game.playerTeam.clear();
-    game.router.pushNamed('menu');
+    game.router.pushReplacementNamed('menu');
+    game.state = GameState.inMenues;
   }
 }
