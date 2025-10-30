@@ -1,5 +1,5 @@
 import 'package:everfight/game/game_state.dart';
-import 'package:everfight/main.dart';
+import 'package:everfight/logic/game_class.dart';
 import 'package:everfight/models/monster.dart';
 import 'package:everfight/widgets/monster_widget.dart';
 import 'package:flame/components.dart';
@@ -30,6 +30,7 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
     ));
 
     _renderTeam();
+    _renderBoss();
   }
 
   void _renderTeam() {
@@ -39,6 +40,10 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
       offsetY += 100;
     }
 
+    // add(MonsterWidget(monster: boss, position: Vector2(game.size.x - 120, game.size.y / 2 - 40)));
+  }
+
+  void _renderBoss() {
     add(MonsterWidget(monster: boss, position: Vector2(game.size.x - 120, game.size.y / 2 - 40)));
   }
 
@@ -53,6 +58,7 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
     timer += dt;
     if (timer > 1.0) {
       _renderTeam();
+      _renderBoss();
       timer = 0;
       if (game.state != GameState.selecting) {
         _doCombatRound();

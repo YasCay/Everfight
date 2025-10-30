@@ -1,4 +1,5 @@
 enum GameState {
+  init,
   idle,
   inCombat,
   selecting,
@@ -9,7 +10,7 @@ enum GameState {
 }
 
 /*
-  "init" --> inMenues
+  init --> inMenues
   inMenues --> selecting (on start run)
   selecting --> inCombat (on monster pick)
   inCombat --> victory (on boss defeat)
