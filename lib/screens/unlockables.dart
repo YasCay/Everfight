@@ -1,4 +1,4 @@
-import 'package:everfight/main.dart';
+import 'package:everfight/logic/game_class.dart';
 import 'package:everfight/widgets/rectangle_button.dart';
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';

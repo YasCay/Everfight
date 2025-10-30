@@ -23,11 +23,11 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
-    - assets/images/monster1.jpeg
-    - assets/images/monster_earth.jpeg
-    - assets/images/monster_fire.jpeg
-    - assets/images/monster_water.jpeg
+    - assets/images/fakemons/earth/
+    - assets/images/fakemons/water/
+    - assets/images/fakemons/fire/
+    - assets/images/fakemons/air/
+    - assets/images/boss_air.jpeg
+    - assets/images/boss_earth.jpeg
     - assets/images/boss_fire.jpeg
     - assets/images/boss_water.jpeg
-    - assets/images/boss_earth.jpeg
-    - assets/images/boss_air.jpeg
