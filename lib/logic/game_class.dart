@@ -1,7 +1,8 @@
 import 'package:everfight/game/game_state.dart';
 import 'package:everfight/logic/game_state_controller.dart';
+import 'package:everfight/logic/team_manager.dart';
+import 'package:everfight/models/boss.dart';
 import 'package:everfight/models/enums.dart';
-import 'package:everfight/models/monster.dart';
 import 'package:everfight/screens/achievements.dart';
 import 'package:everfight/screens/game.dart';
 import 'package:everfight/screens/main_menu.dart';
@@ -12,8 +13,9 @@ import 'package:flame/input.dart';
 class RogueliteGame extends FlameGame with HasKeyboardHandlerComponents {
   late RouterComponent router;
   late GameStateController stateController;
-  final List<Monster> playerTeam = [];
-  final List<Monster> bosses = [];
+  late TeamManager playerTeam;
+
+  final List<Boss> bosses = [];
   int currentBossIndex = 0;
   GameState state = GameState.inMenues;
 
@@ -28,6 +30,7 @@ class RogueliteGame extends FlameGame with HasKeyboardHandlerComponents {
         'game': Route(GameScene.new),
       },
     );
+    playerTeam = TeamManager();
     stateController = GameStateController(this);
     add(router);
     _initMonsters();
@@ -35,10 +38,10 @@ class RogueliteGame extends FlameGame with HasKeyboardHandlerComponents {
 
   void _initMonsters() {
     bosses.addAll([
-      Monster(name: 'Flamurai', baseHealth: 120, baseAttack: 2, element: Element.fire, imagePath: 'boss_fire.jpeg'),
-      Monster(name: 'Frostfang', baseHealth: 150, baseAttack: 10, element: Element.water, imagePath: 'boss_water.jpeg'),
-      Monster(name: 'Terra Titan', baseHealth: 180, baseAttack: 20, element: Element.earth, imagePath: 'boss_earth.jpeg'),
-      Monster(name: 'Birdinator', baseHealth: 180, baseAttack: 20, element: Element.air, imagePath: 'boss_air.jpeg'),
+      Boss(name: 'Infernakor', baseHealth: 120, attack: 2, element: Element.fire, imagePath: 'boss/fire/Infernakor_front.png'),
+      Boss(name: 'Tidalion', baseHealth: 150, attack: 10, element: Element.water, imagePath: 'boss/water/Tidalion_front.png'),
+      Boss(name: 'Terragron', baseHealth: 180, attack: 20, element: Element.earth, imagePath: 'boss/earth/Terragron_front.png'),
+      Boss(name: 'Zephyra', baseHealth: 180, attack: 20, element: Element.air, imagePath: 'boss/air/Zephyra_front.png'),
     ]);
   }
 
@@ -51,7 +54,7 @@ class RogueliteGame extends FlameGame with HasKeyboardHandlerComponents {
   }
 
   void healTeam() {
-    for (final m in playerTeam) {
+    for (final m in playerTeam.team) {
       m.resetHealth();
     }
   }

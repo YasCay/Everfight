@@ -14,13 +14,11 @@ void main() async {
       debugShowCheckedModeBanner: false,
       title: 'Everfight',
       theme: ThemeData.dark(),
-      home: SafeArea(
-        child: GameWidget(
-          game: RogueliteGame(),
-          overlayBuilderMap: {
-            'MonsterSelectionOverlay': (context, game) => MonsterSelectionOverlay(game: game as RogueliteGame),
-          },
-        )
+      home: GameWidget(
+        game: RogueliteGame(),
+        overlayBuilderMap: {
+          'MonsterSelectionOverlay': (context, game) => MonsterSelectionOverlay(game: game as RogueliteGame),
+        },
       ),
     ),
   );

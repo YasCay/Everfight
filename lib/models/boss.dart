@@ -1,10 +1,9 @@
 import 'package:everfight/models/enums.dart';
+import 'package:flutter/material.dart' hide Element;
 
-class Boss {
+class Boss extends ChangeNotifier {
   final String name;
-  final String description;
   final String imagePath;
-  final int level;
   final int baseHealth;
   int health;
   final int attack;
@@ -12,9 +11,7 @@ class Boss {
 
   Boss({
     required this.name,
-    required this.description,
     required this.imagePath,
-    required this.level,
     required this.baseHealth,
     required this.attack,
     required this.element,
@@ -23,9 +20,7 @@ class Boss {
   factory Boss.fromJson(Map<String, dynamic> json) {
     return Boss(
       name: json['name'],
-      description: json['description'],
       imagePath: json['imagePath'],
-      level: json['level'],
       baseHealth: json['baseHealth'],
       attack: json['attack'],
       element: Element.values.firstWhere((e) => e.toString() == 'Element.${json['element']}'),
@@ -35,12 +30,38 @@ class Boss {
   Map<String, dynamic> toJson() {
     return {
       'name': name,
-      'description': description,
       'imagePath': imagePath,
-      'level': level,
       'baseHealth': baseHealth,
       'attack': attack,
       'element': element.toString().split('.').last,
     };
+  }
+
+  void takeDamage(int damage) {
+    health -= damage;
+    if (health < 0) {
+      health = 0;
+    }
+    notifyListeners();
+  }
+
+  void resetHealth() {
+    health = baseHealth;
+    notifyListeners();
+  }
+}
+
+extension BossBackground on Boss {
+  String get backgroundPath {
+    switch (element) {
+      case Element.fire:
+        return 'fightscene/fire/fire_scene.png';
+      case Element.water:
+        return 'fightscene/water/water_scene.png';
+      case Element.earth:
+        return 'fightscene/earth/earth_scene.png';
+      case Element.air:
+        return 'fightscene/air/air_scene.png';
+      }
   }
 }

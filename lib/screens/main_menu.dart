@@ -56,8 +56,8 @@ class MainMenu extends Component with HasGameReference<RogueliteGame> {
 
     final buttons = <Map<String, VoidCallback>>[
       {'Start Run': () => {
-        game.router.pushReplacementNamed('game'),
-        game.state = GameState.idle
+        game.state = GameState.idle,
+        game.router.pushReplacementNamed('game')
       }},
       {'Achievements': () => game.router.pushReplacementNamed('achievements')},
       {'Unlockables': () => game.router.pushReplacementNamed('unlockables')},
