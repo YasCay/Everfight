@@ -7,17 +7,30 @@ import 'package:everfight/screens/achievements.dart';
 import 'package:everfight/screens/game.dart';
 import 'package:everfight/screens/main_menu.dart';
 import 'package:everfight/screens/unlockables.dart';
+import 'package:everfight/util/settings.dart';
 import 'package:flame/game.dart';
 import 'package:flame/input.dart';
 
 class RogueliteGame extends FlameGame with HasKeyboardHandlerComponents {
+  @override
+  bool get debugMode => DEBUG_MODE;
+
   late RouterComponent router;
   late GameStateController stateController;
   late TeamManager playerTeam;
 
   final List<Boss> bosses = [];
   int currentBossIndex = 0;
-  GameState state = GameState.inMenues;
+  GameState _state = GameState.inMenues;
+
+  GameState get state => _state;
+
+  set state(GameState newState) {
+    if (debugMode) {
+      print("GameState changed: $_state --> $newState");
+    }
+    _state = newState;
+  }
 
   @override
   Future<void> onLoad() async {

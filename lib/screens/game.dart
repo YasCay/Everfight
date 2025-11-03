@@ -1,17 +1,23 @@
 import 'package:everfight/game/game_state.dart';
 import 'package:everfight/logic/game_class.dart';
 import 'package:everfight/models/boss.dart';
+import 'package:everfight/util/size_utils.dart';
 import 'package:everfight/widgets/monster_widget.dart';
 import 'package:flame/components.dart';
-import 'package:flutter/material.dart' hide Element;
 
 class GameScene extends Component with HasGameReference<RogueliteGame> {
   late SpriteComponent background;
   late Boss boss;
   double timer = 0;
 
+  List<dynamic> turnQueue = [];
+  int currentTurnIndex = 0;
+
   @override
   Future<void> onLoad() async {
+    if (debugMode) {
+      print(game.size);
+    }
     for (final boss in game.bosses) {
       boss.resetHealth();
     }
@@ -26,12 +32,6 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
       game.state = GameState.selecting;
       game.showMonsterSelection();
     }
-
-    add(TextComponent(
-      text: 'Boss: ${boss.name}',
-      textRenderer: TextPaint(style: const TextStyle(fontSize: 20, color: Colors.white)),
-      position: Vector2(20, 10),
-    ));
 
     _renderTeam();
     _renderBoss();
@@ -54,63 +54,134 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
   }
 
   void _renderTeam() {
-    double offsetY = 60;
-    for (final m in game.playerTeam.team) {
-      add(MonsterWidget(monster: m, position: Vector2(20, offsetY)));
-      offsetY += 100;
-    }
+    final team = game.playerTeam.team;
+    if (team.isEmpty) return;
 
-    // add(MonsterWidget(monster: boss, position: Vector2(game.size.x - 120, game.size.y / 2 - 40)));
+    var monsterWidth = SizeUtils.scalePercentage(game.size.x, 10);
+    var monsterHeight = SizeUtils.scalePercentage(game.size.y, 25);
+    if (debugMode) {
+      print('Monster widget size: $monsterWidth x $monsterHeight');
+    }
+    var halfMonsterWidth = monsterWidth / 2;
+
+    final slotOffsets = [
+      Vector2(-280 - halfMonsterWidth, -70),
+      Vector2(-140 - halfMonsterWidth, -20),
+      Vector2(0    - halfMonsterWidth,   0),
+      Vector2(140  - halfMonsterWidth, -20),
+      Vector2(280  - halfMonsterWidth, -70),
+    ];
+
+    final fillOrder = [2, 1, 3, 0, 4];
+
+    final double centerX = game.size.x / 2;
+    final double baseY = game.size.y - 20 - monsterHeight;
+
+    for (int i = 0; i < team.length && i < 5; i++) {
+      final slotIndex = fillOrder[i];
+      final offset = slotOffsets[slotIndex];
+
+      add(MonsterWidget(
+        monster: team[i],
+        position: Vector2(centerX + offset.x, baseY + offset.y),
+        width: monsterWidth,
+        height: monsterHeight,
+      ));
+    }
   }
 
   void _renderBoss() {
-    add(BossWidget(boss: boss, position: Vector2(game.size.x - 120, game.size.y / 2 - 40)));
+    var bossWidth = SizeUtils.scalePercentage(game.size.x, 20);
+    var bossHeight = SizeUtils.scalePercentage(game.size.y, 35);
+    final pos = Vector2(
+      game.size.x / 2 - bossWidth / 2,
+      20,
+    );
+    add(BossWidget(boss: boss, position: pos, width: bossWidth, height: bossHeight));
   }
 
   @override
   void update(double dt) {
     super.update(dt);
 
-    if (game.state == GameState.inMenues) {
-      return;
+    if (game.state == GameState.inMenues) return;
+    if (game.state == GameState.selecting) return;
+
+    // Start turn cycle if not already
+    if (game.state != GameState.inCombat) {
+      _startTurnOrder();
     }
 
     timer += dt;
-    if (timer > 1.0) {
-      // _renderTeam();
-      // _renderBoss();
+    if (timer > 0.5) {
       timer = 0;
-      if (game.state != GameState.selecting) {
-        _doCombatRound();
-      }
+      _runNextTurn();
     }
   }
 
-  void _doCombatRound() {
-    if (game.state != GameState.inCombat) {
-      game.state = GameState.inCombat;
-    }
+  void _startTurnOrder() {
+    game.state = GameState.inCombat;
 
-    // Player attacks boss
-    final totalDamage = game.playerTeam.team.map((m) => m.baseAttack).fold(0, (a, b) => a + b);
-    boss.takeDamage(totalDamage);
-    if (boss.health <= 0) {
-      _onVictory();
+    final aliveTeam = game.playerTeam.team.where((m) => m.health > 0).toList()..shuffle();
+
+    turnQueue = [...aliveTeam, boss];
+    currentTurnIndex = 0;
+  }
+
+  void _runNextTurn() {
+    if (turnQueue.isEmpty) {
+      _startTurnOrder();
       return;
     }
 
-    // Boss retaliates randomly
-    final target = game.playerTeam.team.where((m) => m.health > 0).toList();
-    if (target.isNotEmpty) {
-      final victim = (target..shuffle()).first;
-      victim.takeDamage(boss.attack);
-      if (victim.health <= 0) {
-        game.playerTeam.remove(victim);
+    final entity = turnQueue[currentTurnIndex];
+
+    // Skip dead monsters
+    if (entity != boss && entity.health <= 0) {
+      currentTurnIndex++;
+      if (currentTurnIndex >= turnQueue.length) {
+        _startTurnOrder();
       }
+      return;
     }
 
-    if (game.playerTeam.team.isEmpty) {
+    if (entity == boss) {
+      _bossAttack();
+    } else {
+      _playerAttack(entity);
+    }
+
+    currentTurnIndex++;
+
+    if (currentTurnIndex >= turnQueue.length) {
+      _startTurnOrder();
+    }
+  }
+
+  void _playerAttack(monster) {
+    boss.takeDamage(monster.baseAttack);
+
+    if (boss.health <= 0) {
+      _onVictory();
+    }
+  }
+
+  void _bossAttack() {
+    final targets = game.playerTeam.team.where((m) => m.health > 0).toList();
+    if (targets.isEmpty) {
       _onDefeat();
+      return;
+    }
+
+    targets.shuffle();
+    final victim = targets.first;
+
+    victim.takeDamage(boss.attack);
+
+    if (victim.health <= 0) {
+      if (game.playerTeam.team.every((m) => m.health <= 0)) {
+        _onDefeat();
+      }
     }
   }
 
@@ -148,7 +219,7 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
   }
 
   void refreshBossUI() {
-    removeWhere((c) => c is MonsterWidget && c.monster == boss);
+    removeWhere((c) => c is BossWidget);
     _renderBoss();
   }
 }
