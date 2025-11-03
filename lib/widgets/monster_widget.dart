@@ -9,7 +9,7 @@ import 'package:flutter/material.dart' hide Image;
 
 class MonsterWidget extends PositionComponent {
   final Monster monster;
-  late SpriteComponent _spriteComponent;
+  late SpriteComponent spriteComponent;
   late ShapeComponent _hpBubble;
   late ShapeComponent _attackBubble;
   late TextPaint _textPaint;
@@ -60,7 +60,7 @@ class MonsterWidget extends PositionComponent {
       (height - fittedSize.y) / 2,
     );
 
-    _spriteComponent = SpriteComponent(
+    spriteComponent = SpriteComponent(
       sprite: sprite,
       size: fittedSize,
       position: offset,
@@ -96,7 +96,7 @@ class MonsterWidget extends PositionComponent {
       ]
     );
 
-    add(_spriteComponent);
+    add(spriteComponent);
     add(_hpBubble);
     add(_attackBubble);
   }
@@ -104,7 +104,7 @@ class MonsterWidget extends PositionComponent {
 
 class BossWidget extends PositionComponent {
   final Boss boss;
-  late SpriteComponent _spriteComponent;
+  late SpriteComponent spriteComponent;
   late ShapeComponent _hpBubble;
   late ShapeComponent _attackBubble;
   late TextPaint _textPaint;
@@ -155,7 +155,7 @@ class BossWidget extends PositionComponent {
       (height - fittedSize.y) / 2,
     );
 
-    _spriteComponent = SpriteComponent(
+    spriteComponent = SpriteComponent(
       sprite: sprite,
       size: fittedSize,
       position: offset,
@@ -191,7 +191,7 @@ class BossWidget extends PositionComponent {
       ]
     );
 
-    add(_spriteComponent);
+    add(spriteComponent);
     add(_hpBubble);
     add(_attackBubble);
   }

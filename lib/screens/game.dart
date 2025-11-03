@@ -4,6 +4,8 @@ import 'package:everfight/models/boss.dart';
 import 'package:everfight/util/size_utils.dart';
 import 'package:everfight/widgets/monster_widget.dart';
 import 'package:flame/components.dart';
+import 'package:flame/effects.dart';
+import 'package:flutter/material.dart';
 
 class GameScene extends Component with HasGameReference<RogueliteGame> {
   late SpriteComponent background;
@@ -18,6 +20,7 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
     if (debugMode) {
       print(game.size);
     }
+    print("GameScene loaded");
     for (final boss in game.bosses) {
       boss.resetHealth();
     }
@@ -54,38 +57,14 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
   }
 
   void _renderTeam() {
-    final team = game.playerTeam.team;
-    if (team.isEmpty) return;
+    final layouts = game.playerTeam.getMonsterLayouts(game.size);
 
-    var monsterWidth = SizeUtils.scalePercentage(game.size.x, 10);
-    var monsterHeight = SizeUtils.scalePercentage(game.size.y, 25);
-    if (debugMode) {
-      print('Monster widget size: $monsterWidth x $monsterHeight');
-    }
-    var halfMonsterWidth = monsterWidth / 2;
-
-    final slotOffsets = [
-      Vector2(-280 - halfMonsterWidth, -70),
-      Vector2(-140 - halfMonsterWidth, -20),
-      Vector2(0    - halfMonsterWidth,   0),
-      Vector2(140  - halfMonsterWidth, -20),
-      Vector2(280  - halfMonsterWidth, -70),
-    ];
-
-    final fillOrder = [2, 1, 3, 0, 4];
-
-    final double centerX = game.size.x / 2;
-    final double baseY = game.size.y - 20 - monsterHeight;
-
-    for (int i = 0; i < team.length && i < 5; i++) {
-      final slotIndex = fillOrder[i];
-      final offset = slotOffsets[slotIndex];
-
+    for (final layout in layouts) {
       add(MonsterWidget(
-        monster: team[i],
-        position: Vector2(centerX + offset.x, baseY + offset.y),
-        width: monsterWidth,
-        height: monsterHeight,
+        monster: layout.monster,
+        position: layout.position,
+        width: layout.width,
+        height: layout.height,
       ));
     }
   }
@@ -159,11 +138,34 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
   }
 
   void _playerAttack(monster) {
-    boss.takeDamage(monster.baseAttack);
+    final monsterWidget = children.whereType<MonsterWidget>().firstWhere((mw) => mw.monster == monster);
+    final bossWidget = children.whereType<BossWidget>().firstWhere((bw) => bw.boss == boss);
 
-    if (boss.health <= 0) {
-      _onVictory();
-    }
+    var monsterPos = monsterWidget.position.clone();
+    var bossPos = bossWidget.position.clone();
+
+    var monsterCenter = monsterPos + Vector2(monsterWidget.width / 2, monsterWidget.height / 2);
+    var bossCenter = bossPos + Vector2(bossWidget.width / 2, bossWidget.height / 2);
+
+    final attackEffect = MoveByEffect(
+      Vector2(bossCenter.x - monsterCenter.x, bossCenter.y - monsterCenter.y) * 0.5,
+      EffectController(duration: 0.15, reverseDuration: 0.15),
+      onComplete: () {
+        boss.takeDamage(monster.baseAttack);
+
+        if (boss.health <= 0) {
+          _onVictory();
+        }
+      },
+    );
+
+    final hitEffect = ColorEffect(
+      Colors.red.withValues(alpha: 0.5),
+      EffectController(duration: 0.1, reverseDuration: 0.1),
+    );
+
+    monsterWidget.add(attackEffect);
+    bossWidget.spriteComponent.add(hitEffect);
   }
 
   void _bossAttack() {
@@ -176,13 +178,35 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
     targets.shuffle();
     final victim = targets.first;
 
-    victim.takeDamage(boss.attack);
+    final victimWidget = children.whereType<MonsterWidget>().firstWhere((mw) => mw.monster == victim);
+    final bossWidget = children.whereType<BossWidget>().firstWhere((bw) => bw.boss == boss);
 
-    if (victim.health <= 0) {
-      if (game.playerTeam.team.every((m) => m.health <= 0)) {
-        _onDefeat();
-      }
-    }
+    var victimPos = victimWidget.position.clone();
+    var bossPos = bossWidget.position.clone();
+    var victimCenter = victimPos + Vector2(victimWidget.width / 2, victimWidget.height / 2);
+    var bossCenter = bossPos + Vector2(bossWidget.width / 2, bossWidget.height / 2);
+
+    final attackEffect = MoveByEffect(
+      Vector2(victimCenter.x - bossCenter.x, victimCenter.y - bossCenter.y) * 0.5,
+      EffectController(duration: 0.15, reverseDuration: 0.15),
+      onComplete: () {
+        victim.takeDamage(boss.attack);
+
+        if (victim.health <= 0) {
+          if (game.playerTeam.team.every((m) => m.health <= 0)) {
+            _onDefeat();
+          }
+        }
+      },
+    );
+
+    final hitEffect = ColorEffect(
+      Colors.red.withValues(alpha: 0.5),
+      EffectController(duration: 0.1, reverseDuration: 0.1),
+    );
+
+    victimWidget.spriteComponent.add(hitEffect);
+    bossWidget.add(attackEffect);
   }
 
   void _onVictory() {
@@ -200,6 +224,7 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
       boss = game.bosses[game.currentBossIndex];
       _loadBackground();
       boss.addListener(refreshBossUI);
+      _renderBoss();
       game.state = GameState.selecting;
       game.showMonsterSelection();
     }
