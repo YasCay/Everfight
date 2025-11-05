@@ -1,11 +1,11 @@
-import 'package:everfight/game/game_state.dart';
+import 'package:everfight/game/game_phase.dart';
 import 'package:everfight/logic/game_class.dart';
 import 'package:everfight/models/boss.dart';
 import 'package:everfight/util/size_utils.dart';
+import 'package:everfight/widgets/boss_widget.dart';
 import 'package:everfight/widgets/monster_widget.dart';
 import 'package:flame/components.dart';
-import 'package:flame/effects.dart';
-import 'package:flutter/material.dart';
+import 'package:flame/flame.dart';
 
 class GameScene extends Component with HasGameReference<RogueliteGame> {
   late SpriteComponent background;
@@ -17,32 +17,33 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
 
   @override
   Future<void> onLoad() async {
+    super.onLoad();
+
     if (debugMode) {
+      print("GameScene loaded with size:");
       print(game.size);
     }
-    print("GameScene loaded");
+
     for (final boss in game.bosses) {
       boss.resetHealth();
     }
 
-    boss = game.bosses[game.currentBossIndex];
-    boss.addListener(refreshBossUI);
-    await _loadBackground();
-
     game.playerTeam.addListener(refreshTeamUI);
 
+    boss = game.bosses[game.currentBossIndex];
+    await _loadBackground();
+
     if (game.playerTeam.team.isEmpty) {
-      game.state = GameState.selecting;
-      game.showMonsterSelection();
+      game.phaseController.startNewRun();
     }
 
-    _renderTeam();
     _renderBoss();
   }
 
   Future<void> _loadBackground() async {
+    var image = Flame.images.fromCache(boss.backgroundPath);
     background = SpriteComponent()
-      ..sprite = await Sprite.load(boss.backgroundPath)
+      ..sprite = Sprite(image)
       ..size = game.size
       ..position = Vector2.zero();
 
@@ -52,7 +53,6 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
   @override
   void onRemove() {
     game.playerTeam.removeListener(refreshTeamUI);
-    boss.removeListener(refreshBossUI);
     super.onRemove();
   }
 
@@ -83,11 +83,12 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
   void update(double dt) {
     super.update(dt);
 
-    if (game.state == GameState.inMenues) return;
-    if (game.state == GameState.selecting) return;
+    final phase = game.phaseController.phase;
 
-    // Start turn cycle if not already
-    if (game.state != GameState.inCombat) {
+    if (phase == GamePhase.inMenues) return;
+    if (phase == GamePhase.selecting) return;
+
+    if (phase == GamePhase.idle) {
       _startTurnOrder();
     }
 
@@ -99,8 +100,7 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
   }
 
   void _startTurnOrder() {
-    game.state = GameState.inCombat;
-
+    game.phaseController.startCombat();
     final aliveTeam = game.playerTeam.team.where((m) => m.health > 0).toList()..shuffle();
 
     turnQueue = [...aliveTeam, boss];
@@ -141,31 +141,11 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
     final monsterWidget = children.whereType<MonsterWidget>().firstWhere((mw) => mw.monster == monster);
     final bossWidget = children.whereType<BossWidget>().firstWhere((bw) => bw.boss == boss);
 
-    var monsterPos = monsterWidget.position.clone();
-    var bossPos = bossWidget.position.clone();
-
-    var monsterCenter = monsterPos + Vector2(monsterWidget.width / 2, monsterWidget.height / 2);
-    var bossCenter = bossPos + Vector2(bossWidget.width / 2, bossWidget.height / 2);
-
-    final attackEffect = MoveByEffect(
-      Vector2(bossCenter.x - monsterCenter.x, bossCenter.y - monsterCenter.y) * 0.5,
-      EffectController(duration: 0.15, reverseDuration: 0.15),
-      onComplete: () {
-        boss.takeDamage(monster.baseAttack);
-
-        if (boss.health <= 0) {
-          _onVictory();
-        }
-      },
-    );
-
-    final hitEffect = ColorEffect(
-      Colors.red.withValues(alpha: 0.5),
-      EffectController(duration: 0.1, reverseDuration: 0.1),
-    );
-
-    monsterWidget.add(attackEffect);
-    bossWidget.spriteComponent.add(hitEffect);
+    monsterWidget.attack(bossWidget, () {
+      if (boss.health <= 0) {
+        _onVictory();
+      }
+    });
   }
 
   void _bossAttack() {
@@ -181,70 +161,35 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
     final victimWidget = children.whereType<MonsterWidget>().firstWhere((mw) => mw.monster == victim);
     final bossWidget = children.whereType<BossWidget>().firstWhere((bw) => bw.boss == boss);
 
-    var victimPos = victimWidget.position.clone();
-    var bossPos = bossWidget.position.clone();
-    var victimCenter = victimPos + Vector2(victimWidget.width / 2, victimWidget.height / 2);
-    var bossCenter = bossPos + Vector2(bossWidget.width / 2, bossWidget.height / 2);
-
-    final attackEffect = MoveByEffect(
-      Vector2(victimCenter.x - bossCenter.x, victimCenter.y - bossCenter.y) * 0.5,
-      EffectController(duration: 0.15, reverseDuration: 0.15),
-      onComplete: () {
-        victim.takeDamage(boss.attack);
-
-        if (victim.health <= 0) {
-          if (game.playerTeam.team.every((m) => m.health <= 0)) {
-            _onDefeat();
-          }
+    bossWidget.attack(victimWidget, () {
+      if (victim.health <= 0) {
+        // Check for defeat
+        final aliveMonsters = game.playerTeam.team.where((m) => m.health > 0).toList();
+        if (aliveMonsters.isEmpty) {
+          _onDefeat();
         }
-      },
-    );
-
-    final hitEffect = ColorEffect(
-      Colors.red.withValues(alpha: 0.5),
-      EffectController(duration: 0.1, reverseDuration: 0.1),
-    );
-
-    victimWidget.spriteComponent.add(hitEffect);
-    bossWidget.add(attackEffect);
+      }
+    });
   }
 
   void _onVictory() {
-    game.state = GameState.victory;
-    game.currentBossIndex++;
-
-    game.healTeam();
-
-    if (game.currentBossIndex >= game.bosses.length) {
-      game.router.pushReplacementNamed('menu');
-      game.state = GameState.inMenues;
-    } else {
-      // Show reward overlay and set next boss
-      boss.removeListener(refreshBossUI);
+    game.phaseController.victory(() {
       boss = game.bosses[game.currentBossIndex];
       _loadBackground();
-      boss.addListener(refreshBossUI);
+      var bossWidget = children.whereType<BossWidget>().first;
+      remove(bossWidget);
+
+      // add new boss widget
       _renderBoss();
-      game.state = GameState.selecting;
-      game.showMonsterSelection();
-    }
+    });
   }
 
   void _onDefeat() {
-    game.state = GameState.defeat;
-    game.currentBossIndex = 0;
-    game.playerTeam.clear();
-    game.router.pushReplacementNamed('menu');
-    game.state = GameState.inMenues;
+    game.phaseController.defeat();
   }
 
   void refreshTeamUI() {
     removeWhere((c) => c is MonsterWidget);
     _renderTeam();
-  }
-
-  void refreshBossUI() {
-    removeWhere((c) => c is BossWidget);
-    _renderBoss();
   }
 }

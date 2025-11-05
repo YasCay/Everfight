@@ -1,4 +1,3 @@
-import 'package:everfight/game/game_state.dart';
 import 'package:everfight/logic/game_class.dart';
 import 'package:everfight/widgets/rectangle_button.dart';
 import 'package:flame/components.dart';
@@ -42,7 +41,7 @@ class MainMenu extends Component with HasGameReference<RogueliteGame> {
     add(RectangleComponent(
       position: Vector2.zero(),
       size: size.clone(),
-      paint: Paint()..color = Colors.black.withOpacity(0.6),
+      paint: Paint()..color = Colors.black.withValues(alpha: 0.6),
       priority: -1,
     ));
 
@@ -67,7 +66,7 @@ class MainMenu extends Component with HasGameReference<RogueliteGame> {
         'label': 'Start Run',
         'action': () {
           game.router.pushReplacementNamed('game');
-          game.state = GameState.idle;
+          // game.state = GamePhase.idle;
         },
         'color': ButtonColorType.green,
         'icon': Icons.arrow_forward,

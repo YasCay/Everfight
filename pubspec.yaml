@@ -39,10 +39,6 @@ flutter:
     - assets/images/fightscene/earth/
     - assets/images/fightscene/fire/
     - assets/images/fightscene/water/
-    - assets/images/boss_air.jpeg
-    - assets/images/boss_earth.jpeg
-    - assets/images/boss_fire.jpeg
-    - assets/images/boss_water.jpeg
     - assets/images/general/splash_bg.png
 
 # Flutter Native Splash configuration

@@ -1,4 +1,4 @@
-enum GameState {
+enum GamePhase {
   init,
   idle,
   inCombat,
