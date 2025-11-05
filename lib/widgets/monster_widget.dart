@@ -42,7 +42,7 @@ class MonsterWidget extends PositionComponent {
       ]),
     );
 
-    Image image = await Flame.images.load(monster.imagePath);
+    Image image = Flame.images.fromCache(monster.imagePath);
     Sprite sprite = Sprite(image);
 
     final imageSize = sprite.srcSize;

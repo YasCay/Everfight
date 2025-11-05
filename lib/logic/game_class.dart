@@ -1,5 +1,4 @@
-import 'package:everfight/game/game_state.dart';
-import 'package:everfight/logic/game_state_controller.dart';
+import 'package:everfight/logic/game_phase_controller.dart';
 import 'package:everfight/logic/team_manager.dart';
 import 'package:everfight/models/boss.dart';
 import 'package:everfight/models/enums.dart';
@@ -7,7 +6,9 @@ import 'package:everfight/screens/achievements.dart';
 import 'package:everfight/screens/game.dart';
 import 'package:everfight/screens/main_menu.dart';
 import 'package:everfight/screens/unlockables.dart';
+import 'package:everfight/util/game_assets.dart';
 import 'package:everfight/util/settings.dart';
+import 'package:flame/flame.dart';
 import 'package:flame/game.dart';
 import 'package:flame/input.dart';
 
@@ -16,24 +17,17 @@ class RogueliteGame extends FlameGame with HasKeyboardHandlerComponents {
   bool get debugMode => DEBUG_MODE;
 
   late RouterComponent router;
-  late GameStateController stateController;
+  late GamePhaseController phaseController;
   late TeamManager playerTeam;
 
   final List<Boss> bosses = [];
   int currentBossIndex = 0;
-  GameState _state = GameState.inMenues;
-
-  GameState get state => _state;
-
-  set state(GameState newState) {
-    if (debugMode) {
-      print("GameState changed: $_state --> $newState");
-    }
-    _state = newState;
-  }
 
   @override
   Future<void> onLoad() async {
+    await Flame.images.loadAll(GameAssets.all);
+    await super.onLoad();
+    
     router = RouterComponent(
       initialRoute: 'menu',
       routes: {
@@ -43,8 +37,9 @@ class RogueliteGame extends FlameGame with HasKeyboardHandlerComponents {
         'game': Route(GameScene.new),
       },
     );
+
     playerTeam = TeamManager();
-    stateController = GameStateController(this);
+    phaseController = GamePhaseController(this);
     add(router);
     _initMonsters();
   }

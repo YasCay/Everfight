@@ -1,4 +1,3 @@
-import 'package:everfight/game/game_state.dart';
 import 'package:everfight/logic/game_class.dart';
 import 'package:flutter/material.dart' hide Element;
 import 'package:everfight/models/monster.dart';
@@ -52,7 +51,7 @@ class MonsterSelectionOverlay extends StatelessWidget {
                         if (isFirstPick) game.currentBossIndex = 0;
 
                         game.router.pushNamed('game');
-                        game.state = GameState.idle;
+                        game.phaseController.onTeamSelected();
                       },
                       child: Container(
                         width: 200,

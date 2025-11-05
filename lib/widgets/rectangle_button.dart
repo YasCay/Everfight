@@ -1,4 +1,3 @@
-import 'dart:ui' as ui;
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flutter/material.dart';
@@ -53,7 +52,7 @@ class RectangleButton extends PositionComponent with TapCallbacks {
     final shadowOffset = _isPressed ? const Offset(1, 1) : const Offset(3, 4);
     canvas.drawRRect(
       RRect.fromRectAndRadius(rect.shift(shadowOffset), radius),
-      Paint()..color = Colors.black.withOpacity(0.18),
+      Paint()..color = Colors.black.withValues(alpha: 0.18),
     );
 
     // Border

@@ -9,7 +9,7 @@ import 'package:flame/flame.dart';
 import 'package:flutter/material.dart' hide Image;
 
 class BossWidget extends PositionComponent {
-  final Boss boss;
+  Boss boss;
   late SpriteComponent _spriteComponent;
   late ShapeComponent _hpBubble;
   late TextComponent _hpText;
@@ -42,7 +42,7 @@ class BossWidget extends PositionComponent {
       ]),
     );
 
-    Image image = await Flame.images.load(boss.imagePath);
+    Image image = Flame.images.fromCache(boss.imagePath);
     Sprite sprite = Sprite(image);
 
     final imageSize = sprite.srcSize;
