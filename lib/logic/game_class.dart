@@ -1,7 +1,6 @@
+import 'package:everfight/logic/boss_manager.dart';
 import 'package:everfight/logic/game_phase_controller.dart';
 import 'package:everfight/logic/team_manager.dart';
-import 'package:everfight/models/boss.dart';
-import 'package:everfight/models/enums.dart';
 import 'package:everfight/screens/achievements.dart';
 import 'package:everfight/screens/game.dart';
 import 'package:everfight/screens/main_menu.dart';
@@ -18,10 +17,10 @@ class RogueliteGame extends FlameGame with HasKeyboardHandlerComponents {
 
   late RouterComponent router;
   late GamePhaseController phaseController;
-  late TeamManager playerTeam;
+  late TeamManager teamManager;
+  late BossManager bossManager;
 
-  final List<Boss> bosses = [];
-  int currentBossIndex = 0;
+  int currentLevel = 1;
 
   @override
   Future<void> onLoad() async {
@@ -38,19 +37,10 @@ class RogueliteGame extends FlameGame with HasKeyboardHandlerComponents {
       },
     );
 
-    playerTeam = TeamManager();
+    teamManager = TeamManager();
+    bossManager = BossManager();
     phaseController = GamePhaseController(this);
     add(router);
-    _initMonsters();
-  }
-
-  void _initMonsters() {
-    bosses.addAll([
-      Boss(name: 'Infernakor', baseHealth: 120, attack: 2, element: Element.fire, imagePath: 'boss/fire/Infernakor_front.png'),
-      Boss(name: 'Tidalion', baseHealth: 150, attack: 10, element: Element.water, imagePath: 'boss/water/Tidalion_front.png'),
-      Boss(name: 'Terragron', baseHealth: 180, attack: 20, element: Element.earth, imagePath: 'boss/earth/Terragron_front.png'),
-      Boss(name: 'Zephyra', baseHealth: 180, attack: 20, element: Element.air, imagePath: 'boss/air/Zephyra_front.png'),
-    ]);
   }
 
   void showMonsterSelection() {
@@ -62,7 +52,7 @@ class RogueliteGame extends FlameGame with HasKeyboardHandlerComponents {
   }
 
   void healTeam() {
-    for (final m in playerTeam.team) {
+    for (final m in teamManager.team) {
       m.resetHealth();
     }
   }
