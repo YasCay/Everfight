@@ -24,6 +24,7 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
+    # Monsters
     - assets/images/fakemons/earth/
     - assets/images/fakemons/water/
     - assets/images/fakemons/fire/
@@ -54,3 +55,13 @@ flutter_native_splash:
     color_dark: "#0B0C0E"
     image: assets/images/general/logo.png
     image_dark: assets/images/general/logo.png
+    # Bosses
+    - assets/images/boss/earth/
+    - assets/images/boss/water/
+    - assets/images/boss/fire/
+    - assets/images/boss/air/
+    # Backgrounds
+    - assets/images/fightscene/air/
+    - assets/images/fightscene/earth/
+    - assets/images/fightscene/fire/
+    - assets/images/fightscene/water/

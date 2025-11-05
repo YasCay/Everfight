@@ -84,6 +84,13 @@ class MainMenu extends Component with HasGameReference<RogueliteGame> {
         'color': ButtonColorType.pink,
         'icon': Icons.lock_open,
       },
+    final buttons = <Map<String, VoidCallback>>[
+      {'Start Run': () => {
+        game.state = GameState.idle,
+        game.router.pushReplacementNamed('game')
+      }},
+      {'Achievements': () => game.router.pushReplacementNamed('achievements')},
+      {'Unlockables': () => game.router.pushReplacementNamed('unlockables')},
     ];
 
     for (int i = 0; i < buttons.length; i++) {

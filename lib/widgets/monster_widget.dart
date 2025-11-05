@@ -1,3 +1,6 @@
+import 'dart:math' as math;
+
+import 'package:everfight/models/boss.dart';
 import 'package:everfight/models/monster.dart';
 import 'package:flame/components.dart';
 import 'package:flame/extensions.dart';
@@ -6,7 +9,7 @@ import 'package:flutter/material.dart' hide Image;
 
 class MonsterWidget extends PositionComponent {
   final Monster monster;
-  late SpriteComponent _spriteComponent;
+  late SpriteComponent spriteComponent;
   late ShapeComponent _hpBubble;
   late ShapeComponent _attackBubble;
   late TextPaint _textPaint;
@@ -14,16 +17,14 @@ class MonsterWidget extends PositionComponent {
   final double width;
   @override
   final double height;
-  final double padding = 5.0;
-  final double spriteSize = 70.0;
   final double textSpacing = 5.0;
   final double bubbleRadius = 15.0;
 
   MonsterWidget({
     required this.monster,
     required Vector2 position,
-    this.width = 80,
-    this.height = 95,
+    required this.width,
+    required this.height,
   }) : super(position: position, size: Vector2(width, height), anchor: Anchor.topLeft);
 
   @override
@@ -39,15 +40,36 @@ class MonsterWidget extends PositionComponent {
     );
 
     Image image = await Flame.images.load(monster.imagePath);
-    _spriteComponent = SpriteComponent()
-      ..sprite = Sprite(image)
-      ..size = Vector2.all(spriteSize)
-      ..position = Vector2(padding, 0);
+    Sprite sprite = Sprite(image);
+
+    final imageSize = sprite.srcSize; // original size
+    final targetSize = Vector2(width, height);
+
+    // aspect-fit scale
+    final scale = math.min(
+      targetSize.x / imageSize.x,
+      targetSize.y / imageSize.y,
+    );
+
+    // new size (fits without stretching)
+    final fittedSize = imageSize * scale;
+
+    // center inside target area
+    final offset = Vector2(
+      (targetSize.x - fittedSize.x) / 2,
+      (height - fittedSize.y) / 2,
+    );
+
+    spriteComponent = SpriteComponent(
+      sprite: sprite,
+      size: fittedSize,
+      position: offset,
+    );
 
     _hpBubble = CircleComponent(
       radius: bubbleRadius,
       paint: Paint()..color = Colors.greenAccent,
-      position: Vector2(bubbleRadius, height - bubbleRadius - 5),
+      position: Vector2(bubbleRadius, height - bubbleRadius),
       anchor: Anchor.center,
       children: [
         TextComponent(
@@ -62,7 +84,7 @@ class MonsterWidget extends PositionComponent {
     _attackBubble = CircleComponent(
       radius: bubbleRadius,
       paint: Paint()..color = Colors.redAccent,
-      position: Vector2(spriteSize, height - bubbleRadius - 5),
+      position: Vector2(width - bubbleRadius, height - bubbleRadius),
       anchor: Anchor.center,
       children: [
         TextComponent(
@@ -74,7 +96,102 @@ class MonsterWidget extends PositionComponent {
       ]
     );
 
-    add(_spriteComponent);
+    add(spriteComponent);
+    add(_hpBubble);
+    add(_attackBubble);
+  }
+}
+
+class BossWidget extends PositionComponent {
+  final Boss boss;
+  late SpriteComponent spriteComponent;
+  late ShapeComponent _hpBubble;
+  late ShapeComponent _attackBubble;
+  late TextPaint _textPaint;
+  @override
+  final double width;
+  @override
+  final double height;
+  final double textSpacing = 5.0;
+  final double bubbleRadius = 15.0;
+
+  BossWidget({
+    required this.boss,
+    required Vector2 position,
+    required this.width,
+    required this.height,
+  }) : super(position: position, size: Vector2(width, height), anchor: Anchor.topLeft);
+
+  @override
+  Future<void> onLoad() async {
+    _textPaint = TextPaint(
+      style: const TextStyle(fontSize: 12, color: Colors.white, fontWeight: FontWeight.bold, shadows: [
+        Shadow(
+          offset: Offset(1, 1),
+          blurRadius: 2,
+          color: Colors.black,
+        ),
+      ]),
+    );
+
+    Image image = await Flame.images.load(boss.imagePath);
+    Sprite sprite = Sprite(image);
+
+    final imageSize = sprite.srcSize; // original size
+    final targetSize = Vector2(width, height);
+
+    // aspect-fit scale
+    final scale = math.min(
+      targetSize.x / imageSize.x,
+      targetSize.y / imageSize.y,
+    );
+
+    // new size (fits without stretching)
+    final fittedSize = imageSize * scale;
+
+    // center inside target area
+    final offset = Vector2(
+      (targetSize.x - fittedSize.x) / 2,
+      (height - fittedSize.y) / 2,
+    );
+
+    spriteComponent = SpriteComponent(
+      sprite: sprite,
+      size: fittedSize,
+      position: offset,
+    );
+
+    _hpBubble = CircleComponent(
+      radius: bubbleRadius,
+      paint: Paint()..color = Colors.greenAccent,
+      position: Vector2(bubbleRadius, height - bubbleRadius),
+      anchor: Anchor.center,
+      children: [
+        TextComponent(
+          text: '${boss.health}',
+          textRenderer: _textPaint,
+          anchor: Anchor.center,
+          position: Vector2(bubbleRadius, bubbleRadius),
+        ),
+      ],
+    );
+
+    _attackBubble = CircleComponent(
+      radius: bubbleRadius,
+      paint: Paint()..color = Colors.redAccent,
+      position: Vector2(width - bubbleRadius, height - bubbleRadius),
+      anchor: Anchor.center,
+      children: [
+        TextComponent(
+          text: '${boss.attack}',
+          textRenderer: _textPaint,
+          anchor: Anchor.center,
+          position: Vector2(bubbleRadius, bubbleRadius),
+        ),
+      ]
+    );
+
+    add(spriteComponent);
     add(_hpBubble);
     add(_attackBubble);
   }

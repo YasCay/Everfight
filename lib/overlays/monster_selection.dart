@@ -8,7 +8,7 @@ class MonsterSelectionOverlay extends StatelessWidget {
   final RogueliteGame game;
   const MonsterSelectionOverlay({super.key, required this.game});
 
-  bool get isFirstPick => game.playerTeam.isEmpty;
+  bool get isFirstPick => game.playerTeam.team.isEmpty;
 
   @override
   Widget build(BuildContext context) {
