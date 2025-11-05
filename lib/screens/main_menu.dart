@@ -28,14 +28,22 @@ class MainMenu extends Component with HasGameReference<RogueliteGame> {
     }
   }
 
-  void _buildUI(Vector2 size) {
+  Future<void> _buildUI(Vector2 size) async {
     removeAll(children.toList());
 
-    // Full-screen background
+    // Background image with dark overlay
+    add(SpriteComponent(
+      sprite: Sprite(await game.images.load('general/splash_bg.png')),
+      size: size.clone(),
+      position: Vector2.zero(),
+      anchor: Anchor.topLeft, 
+      priority: -2,
+    ));
     add(RectangleComponent(
       position: Vector2.zero(),
       size: size.clone(),
-      paint: Paint()..color = Colors.black87,
+      paint: Paint()..color = Colors.black.withOpacity(0.6),
+      priority: -1,
     ));
 
     // Title
@@ -54,6 +62,28 @@ class MainMenu extends Component with HasGameReference<RogueliteGame> {
     final totalHeight = totalButtons * buttonHeight + (totalButtons - 1) * spacing;
     final startY = (size.y - totalHeight) / 2 + 40;
 
+    final buttons = [
+      {
+        'label': 'Start Run',
+        'action': () {
+          game.router.pushReplacementNamed('game');
+          game.state = GameState.idle;
+        },
+        'color': ButtonColorType.green,
+        'icon': Icons.arrow_forward,
+      },
+      {
+        'label': 'Achievements',
+        'action': () => game.router.pushReplacementNamed('achievements'),
+        'color': ButtonColorType.orange,
+        'icon': Icons.star,
+      },
+      {
+        'label': 'Unlockables',
+        'action': () => game.router.pushReplacementNamed('unlockables'),
+        'color': ButtonColorType.pink,
+        'icon': Icons.lock_open,
+      },
     final buttons = <Map<String, VoidCallback>>[
       {'Start Run': () => {
         game.state = GameState.idle,
@@ -64,14 +94,14 @@ class MainMenu extends Component with HasGameReference<RogueliteGame> {
     ];
 
     for (int i = 0; i < buttons.length; i++) {
-      final label = buttons[i].keys.first;
-      final action = buttons[i][label]!;
-
+      final btn = buttons[i];
       add(RectangleButton(
-        label: label,
+        label: btn['label'] as String,
         position: Vector2(size.x / 2 - buttonWidth / 2, startY + i * (buttonHeight + spacing)),
         size: Vector2(buttonWidth, buttonHeight),
-        onPressed: action,
+        onPressed: btn['action'] as VoidCallback,
+        colorType: btn['color'] as ButtonColorType,
+        icon: btn['icon'] as IconData?,
       ));
     }
   }
