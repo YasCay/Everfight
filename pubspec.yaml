@@ -5,7 +5,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: ^3.7.2
+  sdk: ">=3.5.0 <4.0.0"
 
 dependencies:
   flutter:
@@ -17,12 +17,14 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  flutter_native_splash: ^2.4.1
 
   flutter_lints: ^5.0.0
 
 flutter:
   uses-material-design: true
   assets:
+    # Monsters
     - assets/images/fakemons/earth/
     - assets/images/fakemons/water/
     - assets/images/fakemons/fire/
@@ -31,3 +33,35 @@ flutter:
     - assets/images/boss_earth.jpeg
     - assets/images/boss_fire.jpeg
     - assets/images/boss_water.jpeg
+    - assets/images/general/splash_bg.png
+
+# Flutter Native Splash configuration
+flutter_native_splash:
+  android: true
+  ios: true
+  web: false
+
+  color: "#111318"
+  color_dark: "#0B0C0E"
+
+  background_image: assets/images/general/splash_bg.png
+  background_image_dark: assets/images/general/splash_bg.png
+
+  image: assets/images/general/splash_logo.png
+  image_dark: assets/images/general/splash_logo.png
+
+  android_12:
+    color: "#111318"
+    color_dark: "#0B0C0E"
+    image: assets/images/general/logo.png
+    image_dark: assets/images/general/logo.png
+    # Bosses
+    - assets/images/boss/earth/
+    - assets/images/boss/water/
+    - assets/images/boss/fire/
+    - assets/images/boss/air/
+    # Backgrounds
+    - assets/images/fightscene/air/
+    - assets/images/fightscene/earth/
+    - assets/images/fightscene/fire/
+    - assets/images/fightscene/water/
