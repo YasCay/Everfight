@@ -1,5 +1,6 @@
 import 'package:everfight/game/game_phase.dart';
 import 'package:everfight/logic/game_class.dart';
+import 'package:everfight/util/settings.dart';
 
 class GamePhaseController {
   final RogueliteGame game;
@@ -9,8 +10,8 @@ class GamePhaseController {
   GamePhaseController(this.game);
 
   void startNewRun() {
-    game.playerTeam.clear();
-    game.currentBossIndex = 0;
+    game.teamManager.clear();
+    game.currentLevel = 1;
     phase = GamePhase.selecting;
     game.showMonsterSelection();
   }
@@ -26,11 +27,11 @@ class GamePhaseController {
 
   void victory(void Function() nextBossCallback) {
     phase = GamePhase.victory;
-    game.currentBossIndex++;
+    game.currentLevel++;
 
     game.healTeam();
 
-    if (game.currentBossIndex >= game.bosses.length) {
+    if (game.currentLevel >= MAX_BOSS_COUNT) {
       game.router.pushReplacementNamed('menu');
       phase = GamePhase.inMenues;
     } else {
@@ -43,8 +44,8 @@ class GamePhaseController {
 
   void defeat() {
     phase = GamePhase.defeat;
-    game.currentBossIndex = 0;
-    game.playerTeam.clear();
+    game.currentLevel = 1;
+    game.teamManager.clear();
     game.router.pushReplacementNamed('menu');
     phase = GamePhase.inMenues;
   }

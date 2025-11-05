@@ -23,19 +23,15 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
       print("GameScene loaded with size:");
       print(game.size);
     }
+    
+    game.teamManager.addListener(refreshTeamUI);
 
-    for (final boss in game.bosses) {
-      boss.resetHealth();
-    }
-
-    game.playerTeam.addListener(refreshTeamUI);
-
-    boss = game.bosses[game.currentBossIndex];
-    await _loadBackground();
-
-    if (game.playerTeam.team.isEmpty) {
+    if (game.teamManager.team.isEmpty) {
       game.phaseController.startNewRun();
     }
+
+    boss = game.bossManager.generateNextBoss(game.currentLevel);
+    await _loadBackground();
 
     _renderBoss();
   }
@@ -52,12 +48,12 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
 
   @override
   void onRemove() {
-    game.playerTeam.removeListener(refreshTeamUI);
+    game.teamManager.removeListener(refreshTeamUI);
     super.onRemove();
   }
 
   void _renderTeam() {
-    final layouts = game.playerTeam.getMonsterLayouts(game.size);
+    final layouts = game.teamManager.getMonsterLayouts(game.size);
 
     for (final layout in layouts) {
       add(MonsterWidget(
@@ -101,7 +97,7 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
 
   void _startTurnOrder() {
     game.phaseController.startCombat();
-    final aliveTeam = game.playerTeam.team.where((m) => m.health > 0).toList()..shuffle();
+    final aliveTeam = game.teamManager.team.where((m) => m.health > 0).toList()..shuffle();
 
     turnQueue = [...aliveTeam, boss];
     currentTurnIndex = 0;
@@ -149,7 +145,7 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
   }
 
   void _bossAttack() {
-    final targets = game.playerTeam.team.where((m) => m.health > 0).toList();
+    final targets = game.teamManager.team.where((m) => m.health > 0).toList();
     if (targets.isEmpty) {
       _onDefeat();
       return;
@@ -164,7 +160,7 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
     bossWidget.attack(victimWidget, () {
       if (victim.health <= 0) {
         // Check for defeat
-        final aliveMonsters = game.playerTeam.team.where((m) => m.health > 0).toList();
+        final aliveMonsters = game.teamManager.team.where((m) => m.health > 0).toList();
         if (aliveMonsters.isEmpty) {
           _onDefeat();
         }
@@ -174,7 +170,7 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
 
   void _onVictory() {
     game.phaseController.victory(() {
-      boss = game.bosses[game.currentBossIndex];
+      boss = game.bossManager.generateNextBoss(game.currentLevel + 1);
       _loadBackground();
       var bossWidget = children.whereType<BossWidget>().first;
       remove(bossWidget);

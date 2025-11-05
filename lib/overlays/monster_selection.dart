@@ -1,24 +1,15 @@
 import 'package:everfight/logic/game_class.dart';
 import 'package:flutter/material.dart' hide Element;
-import 'package:everfight/models/monster.dart';
-import 'package:everfight/models/enums.dart';
 
 class MonsterSelectionOverlay extends StatelessWidget {
   final RogueliteGame game;
   const MonsterSelectionOverlay({super.key, required this.game});
 
-  bool get isFirstPick => game.playerTeam.team.isEmpty;
+  bool get isFirstPick => game.teamManager.team.isEmpty;
 
   @override
   Widget build(BuildContext context) {
-    final totalCandidates = [
-      Monster(name: 'Basaltor', baseHealth: 90, baseAttack: 10, element: Element.earth, imagePath: 'fakemons/earth/Basaltor_front.png'),
-      Monster(name: 'Tidepanzer', baseHealth: 80, baseAttack: 18, element: Element.water, imagePath: 'fakemons/water/Tidepanzer_front.png'),
-      Monster(name: 'Ashblade', baseHealth: 70, baseAttack: 20, element: Element.fire, imagePath: 'fakemons/fire/Ashblade_front.png'),
-      Monster(name: 'Stormgryph', baseHealth: 70, baseAttack: 20, element: Element.air, imagePath: 'fakemons/air/Stormgryph_front.png'),
-    ];
-
-    final candidates = (totalCandidates..shuffle()).take(3).toList();
+    final candidates = game.teamManager.getRecruitmentCandidates(level: game.currentLevel);
 
     return Material(
       color: Colors.transparent,
@@ -45,10 +36,8 @@ class MonsterSelectionOverlay extends StatelessWidget {
                   children: candidates.map((m) {
                     return GestureDetector(
                       onTap: () {
-                        game.playerTeam.add(m);
+                        game.teamManager.add(m);
                         game.hideMonsterSelection();
-
-                        if (isFirstPick) game.currentBossIndex = 0;
 
                         game.router.pushNamed('game');
                         game.phaseController.onTeamSelected();
