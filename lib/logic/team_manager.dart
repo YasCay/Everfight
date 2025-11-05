@@ -24,6 +24,7 @@ class TeamManager extends ChangeNotifier {
   bool replace(int index, Monster newMonster) {
     if (index < 0 || index >= _team.length) return false;
     _team[index] = newMonster;
+    notifyListeners();
     return true;
   }
 
@@ -113,5 +114,10 @@ class TeamManager extends ChangeNotifier {
     }
     
     return false; // Team full and no valid exchange index provided
+  }
+
+  // Notify listeners to rerender team UI (buggy on skip action)
+  void rerenderTeam() {
+    notifyListeners();
   }
 }

@@ -23,12 +23,24 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
       print("GameScene loaded with size:");
       print(game.size);
     }
-    
-    game.teamManager.addListener(refreshTeamUI);
+  }
 
-    if (game.teamManager.team.isEmpty) {
-      game.phaseController.startNewRun();
-    }
+  @override
+  Future<void> onMount() async {
+    super.onMount();
+
+    game.teamManager.addListener(refreshTeamUI);
+    _initRun();
+  }
+
+  @override
+  void onRemove() {
+    game.teamManager.removeListener(refreshTeamUI);
+    super.onRemove();
+  }
+
+  Future<void> _initRun() async {
+    game.phaseController.startNewRun();
 
     boss = game.bossManager.generateNextBoss(game.currentLevel);
     await _loadBackground();
@@ -44,12 +56,6 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
       ..position = Vector2.zero();
 
     add(background);
-  }
-
-  @override
-  void onRemove() {
-    game.teamManager.removeListener(refreshTeamUI);
-    super.onRemove();
   }
 
   void _renderTeam() {
@@ -76,12 +82,11 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
   }
 
   @override
-  void update(double dt) {
+  Future<void> update(double dt) async {
     super.update(dt);
 
     final phase = game.phaseController.phase;
 
-    if (phase == GamePhase.inMenues) return;
     if (phase == GamePhase.selecting) return;
 
     if (phase == GamePhase.idle) {

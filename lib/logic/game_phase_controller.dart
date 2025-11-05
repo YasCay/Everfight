@@ -33,7 +33,7 @@ class GamePhaseController {
 
     if (game.currentLevel >= MAX_BOSS_COUNT) {
       game.router.pushReplacementNamed('menu');
-      phase = GamePhase.inMenues;
+      phase = GamePhase.init;
     } else {
       // Show reward overlay and set next boss
       nextBossCallback();
@@ -47,7 +47,7 @@ class GamePhaseController {
     game.currentLevel = 1;
     game.teamManager.clear();
     game.router.pushReplacementNamed('menu');
-    phase = GamePhase.inMenues;
+    phase = GamePhase.init;
   }
 
   bool get isCombatReady => phase == GamePhase.idle;
