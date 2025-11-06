@@ -22,6 +22,9 @@ class TeamManager extends ChangeNotifier {
   }
 
   bool replace(int index, Monster newMonster) {
+    if (DEBUG_MODE) {
+      print("Replacing monster at index $index with ${newMonster.name}");
+    }
     if (index < 0 || index >= _team.length) return false;
     _team[index] = newMonster;
     notifyListeners();
@@ -90,10 +93,6 @@ class TeamManager extends ChangeNotifier {
 
     // Pick first `count` monsters and scale their stats by player level
     final selected = allCandidates.take(count).map((m) {
-      // final scaled = m.copyWith(
-      //   baseHealth: (m.baseHealth * (1 + 0.1 * (playerLevel - 1))).toInt(),
-      //   baseAttack: (m.baseAttack * (1 + 0.1 * (playerLevel - 1))).toInt(),
-      // );
       var baseHealth = (m.baseHealth * (1 + 0.1 * (level - 1))).toInt();
       var baseAttack = (m.baseAttack * (1 + 0.1 * (level - 1))).toInt();
       final scaled = Monster(name: m.name, imagePath: m.imagePath, baseHealth: baseHealth, baseAttack: baseAttack, element: m.element);

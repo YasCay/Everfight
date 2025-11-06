@@ -54,7 +54,7 @@ class MonsterSelectionOverlay extends StatelessWidget {
                       onTap: () {
                         if (!teamManager.isFull) {
                           // Add normally if there's space
-                          teamManager.add(m);
+                          teamManager.addOrExchange(m);
                           game.hideMonsterSelection();
                         } else {
                           // Open exchange dialog
