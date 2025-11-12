@@ -12,9 +12,23 @@ class MainMenu extends Component with HasGameReference<RogueliteGame> {
   Future<void> onLoad() async {
     _titlePaint = TextPaint(
       style: const TextStyle(
-        fontSize: 36,
-        color: Colors.white,
-        fontWeight: FontWeight.bold,
+        fontSize: 48,
+        color: Color(0xFFFFD700), // Goldgelb
+        fontWeight: FontWeight.w900,
+        fontFamily: 'Orbitron', // Eigene Schriftart, in pubspec.yaml registrieren!
+        letterSpacing: 3,
+        shadows: [
+          Shadow(
+            offset: Offset(0, 4),
+            blurRadius: 12,
+            color: Colors.black87,
+          ),
+          Shadow(
+            offset: Offset(0, 0),
+            blurRadius: 24,
+            color: Color(0xFFB8860B), // dunkler Goldton
+          ),
+        ],
       ),
     );
   }
