@@ -1,6 +1,7 @@
 import 'package:everfight/game/game_phase.dart';
 import 'package:everfight/logic/game_class.dart';
 import 'package:everfight/models/boss.dart';
+import 'package:everfight/models/monster.dart';
 import 'package:everfight/util/size_utils.dart';
 import 'package:everfight/widgets/boss_widget.dart';
 import 'package:everfight/widgets/monster_widget.dart';
@@ -11,6 +12,7 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
   late SpriteComponent background;
   late Boss boss;
   double timer = 0;
+  bool isAnimating = false;
 
   List<dynamic> turnQueue = [];
   int currentTurnIndex = 0;
@@ -103,6 +105,8 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
       _startTurnOrder();
     }
 
+    if (isAnimating) return;
+
     timer += dt;
     if (timer > 0.5) {
       timer = 0;
@@ -126,31 +130,39 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
 
     final entity = turnQueue[currentTurnIndex];
 
-    // Skip dead monsters
-    if (entity != boss && entity.health <= 0) {
-      currentTurnIndex++;
-      if (currentTurnIndex >= turnQueue.length) {
-        _startTurnOrder();
-      }
+    if (entity is Monster && entity.health <= 0) {
+      _advanceTurn();
       return;
     }
 
     if (entity == boss) {
       _bossAttack();
-    } else {
+    } else if (entity is Monster) {
       _playerAttack(entity);
+    } else {
+      _advanceTurn();
     }
+  }
 
+  void _advanceTurn() {
     currentTurnIndex++;
-
     if (currentTurnIndex >= turnQueue.length) {
       _startTurnOrder();
     }
   }
 
-  void _playerAttack(monster) {
-    final monsterWidget = children.whereType<MonsterWidget>().firstWhere((mw) => mw.monster == monster);
-    final bossWidget = children.whereType<BossWidget>().firstWhere((bw) => bw.boss == boss);
+  void _playerAttack(Monster monster) {
+    final monsterWidget = _findMonsterWidget(monster);
+    final bossWidget = _findBossWidget();
+    if (monsterWidget == null || bossWidget == null) {
+      if (debugMode) {
+        print('Skipping player attack – missing widgets (monster: ${monsterWidget != null}, boss: ${bossWidget != null})');
+      }
+      _advanceTurn();
+      return;
+    }
+
+    isAnimating = true;
 
     monsterWidget.attack(
       target: bossWidget,
@@ -158,8 +170,11 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
         bossWidget.takeDamage(monster.baseAttack);
       },
       onAttackFinished: () {
+        isAnimating = false;
         if (boss.health <= 0) {
           _onVictory();
+        } else {
+          _advanceTurn();
         }
       },
     );
@@ -172,11 +187,21 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
       return;
     }
 
+    isAnimating = true;
     targets.shuffle();
     final victim = targets.first;
 
-    final victimWidget = children.whereType<MonsterWidget>().firstWhere((mw) => mw.monster == victim);
-    final bossWidget = children.whereType<BossWidget>().firstWhere((bw) => bw.boss == boss);
+    final victimWidget = _findMonsterWidget(victim);
+    final bossWidget = _findBossWidget();
+
+    if (victimWidget == null || bossWidget == null) {
+      isAnimating = false;
+      if (debugMode) {
+        print('Skipping boss attack – missing widgets (monster: ${victimWidget != null}, boss: ${bossWidget != null})');
+      }
+      _advanceTurn();
+      return;
+    }
 
     bossWidget.attack(
       target: victimWidget,
@@ -184,14 +209,34 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
         victimWidget.takeDamage(boss.attack);
       },
       onAttackFinished: () {
+        isAnimating = false;
         if (victim.health <= 0) {
           final aliveMonsters = game.teamManager.team.where((m) => m.health > 0).toList();
           if (aliveMonsters.isEmpty) {
             _onDefeat();
+            return;
           }
         }
+        _advanceTurn();
       },
     );
+  }
+
+  MonsterWidget? _findMonsterWidget(Monster monster) {
+    for (final widget in children.whereType<MonsterWidget>()) {
+      if (widget.monster == monster) {
+        return widget;
+      }
+    }
+    return null;
+  }
+
+  BossWidget? _findBossWidget() {
+    final iterator = children.whereType<BossWidget>().iterator;
+    if (iterator.moveNext()) {
+      return iterator.current;
+    }
+    return null;
   }
 
   void _onVictory() {

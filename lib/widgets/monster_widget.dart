@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:everfight/models/monster.dart';
+import 'package:everfight/widgets/damage_popup_component.dart';
 import 'package:everfight/widgets/health_bar_component.dart';
 import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
@@ -10,16 +11,13 @@ import 'package:flutter/material.dart' hide Image;
 
 class MonsterWidget extends PositionComponent {
   final Monster monster;
-  late SpriteComponent _spriteComponent;
+  SpriteComponent? _spriteComponent;
   late HealthBarComponent _hpBubble;
-  late ShapeComponent _attackBubble;
-  late TextComponent _attackText;
   late TextPaint _textPaint;
   @override
   final double width;
   @override
   final double height;
-  final double bubbleRadius = 15.0;
 
   MonsterWidget({
     required this.monster,
@@ -63,11 +61,12 @@ class MonsterWidget extends PositionComponent {
       (height - fittedSize.y) / 2,
     );
 
-    _spriteComponent = SpriteComponent(
+    final spriteComponent = SpriteComponent(
       sprite: sprite,
       size: fittedSize,
       position: offset,
     );
+    _spriteComponent = spriteComponent;
 
     _hpBubble = HealthBarComponent(
       owner: monster,
@@ -77,33 +76,29 @@ class MonsterWidget extends PositionComponent {
       size: Vector2(width * 0.55, 14),
     );
 
-    _attackText = TextComponent(
-      text: '${monster.baseAttack}',
-      textRenderer: _textPaint,
-      anchor: Anchor.center,
-      position: Vector2(bubbleRadius, bubbleRadius),
-    );
-
-    _attackBubble = CircleComponent(
-      radius: bubbleRadius,
-      paint: Paint()..color = Colors.redAccent,
-      position: Vector2(width - bubbleRadius, height - bubbleRadius),
-      anchor: Anchor.center,
-      children: [_attackText],
-    );
-
-    add(_spriteComponent);
+    add(spriteComponent);
     add(_hpBubble);
-    add(_attackBubble);
   }
 
   void takeDamage(int damage) {
     monster.takeDamage(damage);
-    final hitEffect = ColorEffect(
-      Colors.red.withOpacity(0.5),
-      EffectController(duration: 0.1, reverseDuration: 0.1),
+    final spriteComponent = _spriteComponent;
+    if (spriteComponent != null) {
+      final hitEffect = ColorEffect(
+        Colors.red.withOpacity(0.5),
+        EffectController(duration: 0.1, reverseDuration: 0.1),
+      );
+      spriteComponent.add(hitEffect);
+    }
+
+    // Add damage popup at center of monster
+    final popupPosition = Vector2(width / 2, height / 3);
+    final damagePopup = DamagePopupComponent(
+      damage: damage,
+      position: popupPosition,
     );
-    _spriteComponent.add(hitEffect);
+    damagePopup.priority = priority + 1;
+    add(damagePopup);
   }
 
   void attack({
@@ -117,16 +112,18 @@ class MonsterWidget extends PositionComponent {
 
     final reverseAttackEffect = MoveByEffect(
       -moveVector,
-      EffectController(duration: 0.15),
+      EffectController(duration: 0.3),
+      onComplete: () {
+        onAttackFinished();
+      },
     );
 
     final attackEffect = MoveByEffect(
       moveVector,
-      EffectController(duration: 0.15),
+      EffectController(duration: 0.3),
       onComplete: () {
         applyDamage();
         add(reverseAttackEffect);
-        onAttackFinished();
       },
     );
 
