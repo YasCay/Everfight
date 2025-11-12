@@ -21,6 +21,7 @@ class RectangleButton extends PositionComponent with TapCallbacks {
   final ButtonColorType colorType;
   final IconData? icon;
   final List<String> groupTexts;
+  double? fontSize;
 
   static const _borderColor = Colors.black; // vorher: Color(0xFF2D2D2D)
 
@@ -75,7 +76,7 @@ class RectangleButton extends PositionComponent with TapCallbacks {
     );
 
     // Optional Icon
-    double textLeft = rect.left + 18;
+    double textLeft = rect.left + SizeUtils.scalePercentage(rect.width, 7);
     if (icon != null) {
       final iconPainter = TextPainter(
         text: TextSpan(
@@ -89,52 +90,57 @@ class RectangleButton extends PositionComponent with TapCallbacks {
         ),
         textDirection: TextDirection.ltr,
       )..layout();
+
       iconPainter.paint(
         canvas,
-        Offset(rect.left + 12, rect.top + (rect.height - iconPainter.height) / 2),
+        Offset(rect.left + SizeUtils.scalePercentage(rect.width, 4.5), rect.top + (rect.height - iconPainter.height) / 2),
       );
-      textLeft = rect.left + 48;
+      textLeft = textLeft + iconPainter.width;
     }
 
-    double textLeftWidth = rect.left + 18;
-    if (icon != null) textLeftWidth += 28 + 2;
-
-    double availableWidth = rect.width - (textLeftWidth - rect.left) - 12;
-    final fontSize = SizeUtils.fitTextPainter(
-      TextPainter(
+    if (fontSize == null) {
+      final newGroupTexts = groupTexts.map((e) => e.toUpperCase()).toList();
+      // Calculate fitting font size
+      final dummyPainter = TextPainter(
+        text: TextSpan(
+          text: label.toUpperCase(),
+          style: const TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.w900,
+            letterSpacing: 1.5,
+          ),
+        ),
+        textAlign: TextAlign.left,
         textDirection: TextDirection.ltr,
         maxLines: 1,
-      ),
-      availableWidth,
-      [label, ...groupTexts],
-      maxFontSize: 24,
-      minFontSize: 8,
-      letterSpacing: 1.5,
-    );
+        ellipsis: '',
+      );
+
+      fontSize = SizeUtils.fitTextPainter(
+        dummyPainter,
+        rect.right - textLeft - SizeUtils.scalePercentage(rect.width, 4.5),
+        newGroupTexts,
+        maxFontSize: 24,
+        minFontSize: 6,
+      );
+    }
 
     // Label
-    var textPainter = TextPainter(
+    final textPainter = TextPainter(
       text: TextSpan(
         text: label.toUpperCase(),
         style: TextStyle(
           color: Colors.black,
-          fontSize: 22,
+          fontSize: fontSize,
           fontWeight: FontWeight.w900,
           letterSpacing: 1.5,
         ),
       ),
       textAlign: TextAlign.left,
       textDirection: TextDirection.ltr,
-    )..layout(maxWidth: rect.right - textLeft - 12);
-
-    textPainter = SizeUtils.fitTextPainter(
-      textPainter,
-      availableWidth,
-      [label, ...groupTexts],
-      maxFontSize: 24,
-      minFontSize: 8,
-      letterSpacing: 1.5,
-    );
+      maxLines: 1,
+      ellipsis: '',
+    )..layout(maxWidth: rect.right - textLeft - SizeUtils.scalePercentage(rect.width, 4.5));
 
     textPainter.paint(
       canvas,

@@ -2,52 +2,45 @@ import 'package:flutter/material.dart';
 
 class SizeUtils {
   static double scalePercentage(double baseSize, double percentage) {
-    return baseSize * (percentage / 100);
+    var newSize = baseSize * (percentage / 100);
+    return (newSize * 10).floorToDouble() / 10;
   }
   
-  static TextPainter fitTextPainter(
+  static double fitTextPainter(
     TextPainter textPainter,
     double containerWidth,
     List<String> texts, {
     double maxFontSize = 24,
     double minFontSize = 6,
-    double letterSpacing = 0,
-    String fontFamily = 'Arial',
-    FontWeight fontWeight = FontWeight.normal,
   }) {
-    // Extract existing style, fallback if null
     final baseStyle = (textPainter.text as TextSpan?)?.style ?? const TextStyle();
-    double fontSize = maxFontSize;
-    String originalText = (textPainter.text as TextSpan?)?.text ?? '';
+    double fontSize = minFontSize;
+    double lastFittingSize = minFontSize;
 
-    while (fontSize >= minFontSize) {
-      bool fits = true;
+    while (fontSize <= maxFontSize) {
+      bool allFit = true;
 
       for (final text in texts) {
         textPainter.text = TextSpan(
           text: text,
-          style: baseStyle.copyWith(fontSize: fontSize),
+          style: baseStyle.copyWith(
+            fontSize: fontSize,
+          ),
         );
-        textPainter.layout();
 
+        textPainter.layout();
         if (textPainter.width > containerWidth) {
-          fits = false;
+          allFit = false;
           break;
         }
       }
 
-      if (fits) break;
-      fontSize -= 0.5;
+      if (!allFit) break;
+
+      lastFittingSize = fontSize;
+      fontSize += 0.5;
     }
 
-    // Apply the final font size
-    textPainter.text = TextSpan(
-      text: originalText,
-      children: (textPainter.text as TextSpan?)?.children,
-      style: baseStyle.copyWith(fontSize: fontSize.clamp(minFontSize, maxFontSize)),
-    );
-    textPainter.layout();
-
-    return textPainter;
+    return lastFittingSize.clamp(minFontSize, maxFontSize);
   }
 }

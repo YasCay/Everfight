@@ -1,4 +1,5 @@
 import 'package:everfight/logic/game_class.dart';
+import 'package:everfight/util/size_utils.dart';
 import 'package:everfight/widgets/rectangle_button.dart';
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
@@ -68,12 +69,12 @@ class MainMenu extends Component with HasGameReference<RogueliteGame> {
     ));
 
     // Buttons
-    const buttonWidth = 260.0;
-    const buttonHeight = 56.0;
-    const spacing = 20.0;
+    final buttonWidth = SizeUtils.scalePercentage(size.x, 30);
+    final buttonHeight = SizeUtils.scalePercentage(size.y, 14);
+    final spacing = SizeUtils.scalePercentage(size.y, 5);
     final totalButtons = 3;
     final totalHeight = totalButtons * buttonHeight + (totalButtons - 1) * spacing;
-    final startY = (size.y - totalHeight) / 2 + 40;
+    final startY = (size.y - totalHeight) / 2 + SizeUtils.scalePercentage(size.y, 10);
 
     final buttons = [
       {
