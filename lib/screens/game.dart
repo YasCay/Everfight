@@ -7,12 +7,17 @@ import 'package:everfight/widgets/boss_widget.dart';
 import 'package:everfight/widgets/monster_widget.dart';
 import 'package:flame/components.dart';
 import 'package:flame/flame.dart';
+import 'package:flutter/material.dart';
+import 'package:everfight/util/settings.dart';
 
 class GameScene extends Component with HasGameReference<RogueliteGame> {
   late SpriteComponent background;
   late Boss boss;
   double timer = 0;
   bool isAnimating = false;
+
+  late TextComponent levelText;
+  double levelFontSize = 18.0;
 
   List<dynamic> turnQueue = [];
   int currentTurnIndex = 0;
@@ -32,7 +37,12 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
     super.onMount();
 
     game.teamManager.addListener(refreshTeamUI);
-    _initRun();
+    // Ensure the run is initialized so we know the current level and background.
+    await _initRun();
+
+    // Create and show the level indicator top-left after the scene has been initialized
+    // so it is drawn above the background.
+    _createLevelText();
   }
 
   @override
@@ -48,6 +58,77 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
     await _loadBackground();
 
     _renderBoss();
+  }
+
+  void _createLevelText() {
+  final fontSize = levelFontSize; // reasonable default; scaled sizes can be used if desired
+    levelText = TextComponent(
+      text: 'Level ${game.currentLevel}',
+      textRenderer: _textPaintForLevel(game.currentLevel, fontSize),
+    )
+      ..position = Vector2(8, 8)
+      ..priority = 100; // ensure it's on top
+
+    add(levelText);
+  }
+
+  void _updateLevelText() {
+    try {
+  levelText.text = 'Level ${game.currentLevel}';
+  // refresh renderer to reflect new level glow/color
+  levelText.textRenderer = _textPaintForLevel(game.currentLevel, levelFontSize);
+    } catch (e) {
+      // If levelText isn't ready or an error occurs, ignore silently.
+      if (debugMode) {
+        print('Could not update level text: $e');
+      }
+    }
+  }
+
+  TextPaint _textPaintForLevel(int level, double fontSize) {
+    // Use MAX_BOSS_COUNT to compute progression (0.0 - 1.0). If MAX_BOSS_COUNT is 0 fall back to 1.
+    final maxLevel = (MAX_BOSS_COUNT <= 0) ? 1 : MAX_BOSS_COUNT;
+    final progress = (level / maxLevel).clamp(0.0, 1.0);
+
+    // Keep the text itself white; the glow will carry the color/gradient.
+    final baseColor = Colors.white;
+
+    // Gradient endpoints for the glow (cool -> warm).
+    final startColor = HSVColor.fromAHSV(1.0, 200, 0.9, 0.9).toColor(); // blue-cyan
+    final endColor = HSVColor.fromAHSV(1.0, 40, 0.95, 1.0).toColor(); // yellow-orange
+
+    // Determine the main glow color by progress along the gradient.
+    final mainGlow = Color.lerp(startColor, endColor, progress) ?? startColor;
+
+    // Glow intensity & spread increase with progress.
+    final glowIntensity = (1.0 + progress * 3.0).clamp(1.0, 4.0);
+
+    // Create layered shadows to mimic a soft, colored glow. Layers closer to text are brighter
+    // and smaller; outer layers are larger and more diffuse.
+    final layers = 6;
+    final shadows = <Shadow>[];
+    for (var i = 0; i < layers; i++) {
+      final t = i / (layers - 1);
+      final blur = (2.0 + t * 18.0) * glowIntensity;
+
+      // opacity depends on both progress and layer position; inner layers slightly stronger
+      final layerBase = 0.3 * (1 - t) + 0.06;
+      final opacity = (layerBase * (0.6 + progress * 0.8)).clamp(0.02, 0.95);
+
+      // Mix a bit of the start/end based on layer to create a radial-like gradient
+      final layerColor = Color.lerp(mainGlow, startColor, (1 - t) * 0.25)!.withOpacity(opacity);
+
+      shadows.add(Shadow(color: layerColor, blurRadius: blur, offset: Offset(0, 0)));
+    }
+
+    final textStyle = TextStyle(
+      color: baseColor,
+      fontSize: fontSize,
+      fontWeight: FontWeight.w800,
+      shadows: shadows,
+    );
+
+    return TextPaint(style: textStyle);
   }
 
   Future<void> _loadBackground() async {
@@ -238,6 +319,8 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
 
       // add new boss widget
       _renderBoss();
+      // Update the level label in case the game's level changed
+      _updateLevelText();
     });
   }
 
