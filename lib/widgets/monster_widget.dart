@@ -7,12 +7,12 @@ import 'package:flame/effects.dart';
 import 'package:flame/extensions.dart';
 import 'package:flame/flame.dart';
 import 'package:flutter/material.dart' hide Image;
+import 'package:everfight/widgets/health_bar_component.dart';
 
 class MonsterWidget extends PositionComponent {
   final Monster monster;
-  late SpriteComponent _spriteComponent;
-  late ShapeComponent _hpBubble;
-  late TextComponent _hpText;
+  late SpriteComponent spriteComponent;
+  late HealthBarComponent _hpBubble;
   late ShapeComponent _attackBubble;
   late TextComponent _attackText;
   late TextPaint _textPaint;
@@ -66,26 +66,12 @@ class MonsterWidget extends PositionComponent {
       position: offset,
     );
 
-    _hpText = TextComponent(
-      text: '${monster.health}',
-      textRenderer: _textPaint,
-      anchor: Anchor.center,
-      position: Vector2(bubbleRadius, bubbleRadius),
-    );
-
-    _hpBubble = CircleComponent(
-      radius: bubbleRadius,
-      paint: Paint()..color = Colors.greenAccent,
-      position: Vector2(bubbleRadius, height - bubbleRadius),
-      anchor: Anchor.center,
-      children: [_hpText],
-    );
-
-    _attackText = TextComponent(
-      text: '${monster.baseAttack}',
-      textRenderer: _textPaint,
-      anchor: Anchor.center,
-      position: Vector2(bubbleRadius, bubbleRadius),
+    _hpBubble = HealthBarComponent(
+      owner: monster,
+      getCurrent: () => monster.health,
+      getMax: () => monster.baseHealth,
+      position: Vector2(8, height - 18),
+      size: Vector2(width * 0.55, 14),
     );
 
     _attackBubble = CircleComponent(
@@ -100,6 +86,20 @@ class MonsterWidget extends PositionComponent {
     add(_hpBubble);
     add(_attackBubble);
   }
+}
+
+class BossWidget extends PositionComponent {
+  final Boss boss;
+  late SpriteComponent spriteComponent;
+  late HealthBarComponent _hpBubble;
+  late ShapeComponent _attackBubble;
+  late TextPaint _textPaint;
+  @override
+  final double width;
+  @override
+  final double height;
+  final double textSpacing = 5.0;
+  final double bubbleRadius = 15.0;
 
   void takeDamage(int damage) {
     monster.takeDamage(damage);
@@ -133,7 +133,31 @@ class MonsterWidget extends PositionComponent {
       },
     );
 
-    // Run animation
-    add(attackEffect);
+    _hpBubble = HealthBarComponent(
+      owner: boss,
+      getCurrent: () => boss.health,
+      getMax: () => boss.baseHealth,
+      position: Vector2(8, height - 18),
+      size: Vector2(width * 0.5, 16),
+    );
+
+    _attackBubble = CircleComponent(
+      radius: bubbleRadius,
+      paint: Paint()..color = Colors.redAccent,
+      position: Vector2(width - bubbleRadius, height - bubbleRadius),
+      anchor: Anchor.center,
+      children: [
+        TextComponent(
+          text: '${boss.attack}',
+          textRenderer: _textPaint,
+          anchor: Anchor.center,
+          position: Vector2(bubbleRadius, bubbleRadius),
+        ),
+      ]
+    );
+
+    add(spriteComponent);
+    add(_hpBubble);
+    add(_attackBubble);
   }
 }

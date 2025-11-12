@@ -11,9 +11,23 @@ class MainMenu extends Component with HasGameReference<RogueliteGame> {
   Future<void> onLoad() async {
     _titlePaint = TextPaint(
       style: const TextStyle(
-        fontSize: 36,
-        color: Colors.white,
-        fontWeight: FontWeight.bold,
+        fontSize: 48,
+        color: Color(0xFFFFD700), // Goldgelb
+        fontWeight: FontWeight.w900,
+        fontFamily: 'Orbitron', // Eigene Schriftart, in pubspec.yaml registrieren!
+        letterSpacing: 3,
+        shadows: [
+          Shadow(
+            offset: Offset(0, 4),
+            blurRadius: 12,
+            color: Colors.black87,
+          ),
+          Shadow(
+            offset: Offset(0, 0),
+            blurRadius: 24,
+            color: Color.fromARGB(255, 10, 44, 101), // dunkler Goldton
+          ),
+        ],
       ),
     );
   }
@@ -47,7 +61,7 @@ class MainMenu extends Component with HasGameReference<RogueliteGame> {
 
     // Title
     add(TextComponent(
-      text: 'Everfight',
+      text: 'EVERFIGHT',
       textRenderer: _titlePaint,
       anchor: Anchor.center,
       position: Vector2(size.x / 2, size.y * 0.2),
