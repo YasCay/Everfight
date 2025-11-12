@@ -22,7 +22,10 @@ class GamePhaseController {
 
   void startCombat() {
     // if (phase != GamePhase.idle) return;
-    phase = GamePhase.inCombat;
+    if (phase != GamePhase.inCombat) {
+      // Avoid unnecessary state changes
+      phase = GamePhase.inCombat;
+    }
   }
 
   void victory(void Function() nextBossCallback) {

@@ -49,6 +49,7 @@ class RogueliteGame extends FlameGame with HasKeyboardHandlerComponents {
 
   void hideMonsterSelection() {
     overlays.remove('MonsterSelectionOverlay');
+    phaseController.onTeamSelected();
   }
 
   void healTeam() {

@@ -203,5 +203,8 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
   void refreshTeamUI() {
     removeWhere((c) => c is MonsterWidget);
     _renderTeam();
+    // reset turn order (workaround --> currently sometimes buggy behavior on replace/skip)
+    turnQueue.clear();
+    currentTurnIndex = 0;
   }
 }
