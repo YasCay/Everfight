@@ -1,6 +1,7 @@
 import 'package:everfight/logic/game_class.dart';
+import 'package:everfight/overlays/monster_exchange.dart';
+import 'package:everfight/widgets/candidate_card.dart';
 import 'package:flutter/material.dart' hide Element;
-import 'package:everfight/models/monster.dart';
 
 class MonsterSelectionOverlay extends StatelessWidget {
   final RogueliteGame game;
@@ -49,22 +50,29 @@ class MonsterSelectionOverlay extends StatelessWidget {
                   spacing: 16,
                   runSpacing: 16,
                   alignment: WrapAlignment.center,
-                  children: candidates.map((m) {
-                    return GestureDetector(
-                      onTap: () {
+                  children: candidates.map((m) => CandidateCard(
+                    monster: m,
+                    onTap: () {
                         if (!teamManager.isFull) {
                           // Add normally if there's space
                           teamManager.addOrExchange(m);
-                          game.hideMonsterSelection();
                         } else {
                           // Open exchange dialog
-                          _showExchangeDialog(context, m);
+                          Navigator.of(context).push(
+                            PageRouteBuilder(
+                              opaque: false,
+                              barrierColor: Colors.black.withValues(alpha: 0.8),
+                              pageBuilder: (_, __, ___) => MonsterExchangeOverlay(
+                                game: game,
+                                newMonster: m,
+                              ),
+                            ),
+                          );
                         }
-                        game.phaseController.onTeamSelected();
+
+                        game.hideMonsterSelection();
                       },
-                      child: _buildCandidateCard(m),
-                    );
-                  }).toList(),
+                  )).toList(),
                 ),
               ],
             ),
@@ -74,93 +82,69 @@ class MonsterSelectionOverlay extends StatelessWidget {
     );
   }
 
-  Widget _buildCandidateCard(Monster m) {
-    return Container(
-      width: 200,
-      padding: const EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        color: Colors.blueGrey.withValues(alpha: 0.3),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.white24),
-      ),
-      child: Column(
-        children: [
-          Text(m.name,
-              style: const TextStyle(
-                  color: Colors.white, fontWeight: FontWeight.bold, fontSize: 28)),
-          const SizedBox(height: 6),
-          Text('HP: ${m.baseHealth}', style: const TextStyle(color: Colors.white70, fontSize: 16)),
-          Text('ATK: ${m.baseAttack}', style: const TextStyle(color: Colors.white70, fontSize: 16)),
-          const SizedBox(height: 6),
-          Image.asset("assets/images/${m.imagePath}", height: 90),
-        ],
-      ),
-    );
-  }
+  // void _showExchangeDialog(BuildContext context, Monster newMonster) {
+  //   final teamManager = game.teamManager;
 
-  void _showExchangeDialog(BuildContext context, Monster newMonster) {
-    final teamManager = game.teamManager;
-
-    showDialog(
-      context: context,
-      builder: (_) {
-        return AlertDialog(
-          backgroundColor: Colors.blueGrey[900],
-          title: const Text(
-            'Team Full!',
-            style: TextStyle(color: Colors.white),
-          ),
-          content: SizedBox(
-            width: double.maxFinite,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Text(
-                  'Select a monster to replace or skip:',
-                  style: TextStyle(color: Colors.white70),
-                ),
-                const SizedBox(height: 10),
-                Expanded(
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: teamManager.team.length,
-                    itemBuilder: (context, index) {
-                      final current = teamManager.team[index];
-                      return ListTile(
-                        tileColor: Colors.blueGrey.withValues(alpha: 0.3),
-                        title: Text(current.name, style: const TextStyle(color: Colors.white)),
-                        subtitle: Text('HP: ${current.baseHealth}, ATK: ${current.baseAttack}',
-                            style: const TextStyle(color: Colors.white70)),
-                        trailing: Image.asset("assets/images/${current.imagePath}", height: 40),
-                        onTap: () {
-                          // Replace selected monster
-                          teamManager.addOrExchange(newMonster, exchangeIndex: index);
-                          Navigator.of(context).pop();
-                          game.hideMonsterSelection();
-                        },
-                      );
-                    },
-                  ),
-                ),
-                const SizedBox(height: 10),
-                // Skip button
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.grey[700],
-                  ),
-                  onPressed: () {
-                    // Skip exchanging, keep current team
-                    Navigator.of(context).pop();
-                    game.teamManager.rerenderTeam();
-                    game.hideMonsterSelection();
-                  },
-                  child: const Text('Skip', style: TextStyle(color: Colors.white)),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
+  //   showDialog(
+  //     context: context,
+  //     builder: (_) {
+  //       return AlertDialog(
+  //         backgroundColor: Colors.blueGrey[900],
+  //         title: const Text(
+  //           'Team Full!',
+  //           style: TextStyle(color: Colors.white),
+  //         ),
+  //         content: SizedBox(
+  //           width: double.maxFinite,
+  //           child: Column(
+  //             mainAxisSize: MainAxisSize.min,
+  //             children: [
+  //               const Text(
+  //                 'Select a monster to replace or skip:',
+  //                 style: TextStyle(color: Colors.white70),
+  //               ),
+  //               const SizedBox(height: 10),
+  //               Expanded(
+  //                 child: ListView.builder(
+  //                   shrinkWrap: true,
+  //                   itemCount: teamManager.team.length,
+  //                   itemBuilder: (context, index) {
+  //                     final current = teamManager.team[index];
+  //                     return ListTile(
+  //                       tileColor: Colors.blueGrey.withValues(alpha: 0.3),
+  //                       title: Text(current.name, style: const TextStyle(color: Colors.white)),
+  //                       subtitle: Text('HP: ${current.baseHealth}, ATK: ${current.baseAttack}',
+  //                           style: const TextStyle(color: Colors.white70)),
+  //                       trailing: Image.asset("assets/images/${current.imagePath}", height: 40),
+  //                       onTap: () {
+  //                         // Replace selected monster
+  //                         teamManager.addOrExchange(newMonster, exchangeIndex: index);
+  //                         Navigator.of(context).pop();
+  //                         game.hideMonsterSelection();
+  //                       },
+  //                     );
+  //                   },
+  //                 ),
+  //               ),
+  //               const SizedBox(height: 10),
+  //               // Skip button
+  //               ElevatedButton(
+  //                 style: ElevatedButton.styleFrom(
+  //                   backgroundColor: Colors.grey[700],
+  //                 ),
+  //                 onPressed: () {
+  //                   // Skip exchanging, keep current team
+  //                   Navigator.of(context).pop();
+  //                   game.teamManager.rerenderTeam();
+  //                   game.hideMonsterSelection();
+  //                 },
+  //                 child: const Text('Skip', style: TextStyle(color: Colors.white)),
+  //               ),
+  //             ],
+  //           ),
+  //         ),
+  //       );
+  //     },
+  //   );
+  // }
 }
