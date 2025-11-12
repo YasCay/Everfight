@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:everfight/models/boss.dart';
+import 'package:everfight/widgets/damage_popup_component.dart';
 import 'package:everfight/widgets/health_bar_component.dart';
 import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
@@ -10,17 +11,13 @@ import 'package:flutter/material.dart' hide Image;
 
 class BossWidget extends PositionComponent {
   Boss boss;
-  late SpriteComponent _spriteComponent;
+  SpriteComponent? _spriteComponent;
   late HealthBarComponent _hpBubble;
-  late ShapeComponent _attackBubble;
-  late TextComponent _attackText;
   late TextPaint _textPaint;
   @override
   final double width;
   @override
   final double height;
-  final double textSpacing = 5.0;
-  final double bubbleRadius = 15.0;
 
   BossWidget({
     required this.boss,
@@ -59,11 +56,12 @@ class BossWidget extends PositionComponent {
       (height - fittedSize.y) / 2,
     );
 
-    _spriteComponent = SpriteComponent(
+    final spriteComponent = SpriteComponent(
       sprite: sprite,
       size: fittedSize,
       position: offset,
     );
+    _spriteComponent = spriteComponent;
 
     _hpBubble = HealthBarComponent(
       owner: boss,
@@ -73,24 +71,8 @@ class BossWidget extends PositionComponent {
       size: Vector2(width * 0.5, 16),
     );
 
-    _attackText = TextComponent(
-      text: '${boss.attack}',
-      textRenderer: _textPaint,
-      anchor: Anchor.center,
-      position: Vector2(bubbleRadius, bubbleRadius),
-    );
-
-    _attackBubble = CircleComponent(
-      radius: bubbleRadius,
-      paint: Paint()..color = Colors.redAccent,
-      position: Vector2(width - bubbleRadius, height - bubbleRadius),
-      anchor: Anchor.center,
-      children: [_attackText]
-    );
-
-    add(_spriteComponent);
+    add(spriteComponent);
     add(_hpBubble);
-    add(_attackBubble);
   }
 
   @override
@@ -103,12 +85,23 @@ class BossWidget extends PositionComponent {
   void takeDamage(int damage) {
     boss.takeDamage(damage);
 
-    final hitEffect = ColorEffect(
-      Colors.red.withValues(alpha: 0.5),
-      EffectController(duration: 0.1, reverseDuration: 0.1),
-    );
+    final spriteComponent = _spriteComponent;
+    if (spriteComponent != null) {
+      final hitEffect = ColorEffect(
+        Colors.red.withValues(alpha: 0.5),
+        EffectController(duration: 0.1, reverseDuration: 0.1),
+      );
+      spriteComponent.add(hitEffect);
+    }
 
-    _spriteComponent.add(hitEffect);
+    // Add damage popup at center of boss
+    final popupPosition = Vector2(width / 2, height / 3);
+    final damagePopup = DamagePopupComponent(
+      damage: damage,
+      position: popupPosition,
+    );
+    damagePopup.priority = priority + 1;
+    add(damagePopup);
   }
 
   void attack({
@@ -122,16 +115,18 @@ class BossWidget extends PositionComponent {
 
     final reverseAttackEffect = MoveByEffect(
       -moveVector,
-      EffectController(duration: 0.15),
+      EffectController(duration: 0.3),
+      onComplete: () {
+        onAttackFinished();
+      },
     );
 
     final attackEffect = MoveByEffect(
       moveVector,
-      EffectController(duration: 0.15),
+      EffectController(duration: 0.3),
       onComplete: () {
         applyDamage();
         add(reverseAttackEffect);
-        onAttackFinished();
       },
     );
 
