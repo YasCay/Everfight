@@ -6,11 +6,12 @@ import 'package:flame/components.dart';
 import 'package:flame/extensions.dart';
 import 'package:flame/flame.dart';
 import 'package:flutter/material.dart' hide Image;
+import 'package:everfight/widgets/health_bar_component.dart';
 
 class MonsterWidget extends PositionComponent {
   final Monster monster;
   late SpriteComponent spriteComponent;
-  late ShapeComponent _hpBubble;
+  late HealthBarComponent _hpBubble;
   late ShapeComponent _attackBubble;
   late TextPaint _textPaint;
   @override
@@ -66,19 +67,12 @@ class MonsterWidget extends PositionComponent {
       position: offset,
     );
 
-    _hpBubble = CircleComponent(
-      radius: bubbleRadius,
-      paint: Paint()..color = Colors.greenAccent,
-      position: Vector2(bubbleRadius, height - bubbleRadius),
-      anchor: Anchor.center,
-      children: [
-        TextComponent(
-          text: '${monster.health}',
-          textRenderer: _textPaint,
-          anchor: Anchor.center,
-          position: Vector2(bubbleRadius, bubbleRadius),
-        ),
-      ],
+    _hpBubble = HealthBarComponent(
+      owner: monster,
+      getCurrent: () => monster.health,
+      getMax: () => monster.baseHealth,
+      position: Vector2(8, height - 18),
+      size: Vector2(width * 0.55, 14),
     );
 
     _attackBubble = CircleComponent(
@@ -105,7 +99,7 @@ class MonsterWidget extends PositionComponent {
 class BossWidget extends PositionComponent {
   final Boss boss;
   late SpriteComponent spriteComponent;
-  late ShapeComponent _hpBubble;
+  late HealthBarComponent _hpBubble;
   late ShapeComponent _attackBubble;
   late TextPaint _textPaint;
   @override
@@ -161,19 +155,12 @@ class BossWidget extends PositionComponent {
       position: offset,
     );
 
-    _hpBubble = CircleComponent(
-      radius: bubbleRadius,
-      paint: Paint()..color = Colors.greenAccent,
-      position: Vector2(bubbleRadius, height - bubbleRadius),
-      anchor: Anchor.center,
-      children: [
-        TextComponent(
-          text: '${boss.health}',
-          textRenderer: _textPaint,
-          anchor: Anchor.center,
-          position: Vector2(bubbleRadius, bubbleRadius),
-        ),
-      ],
+    _hpBubble = HealthBarComponent(
+      owner: boss,
+      getCurrent: () => boss.health,
+      getMax: () => boss.baseHealth,
+      position: Vector2(8, height - 18),
+      size: Vector2(width * 0.5, 16),
     );
 
     _attackBubble = CircleComponent(

@@ -26,7 +26,7 @@ class MainMenu extends Component with HasGameReference<RogueliteGame> {
           Shadow(
             offset: Offset(0, 0),
             blurRadius: 24,
-            color: Color(0xFFB8860B), // dunkler Goldton
+            color: Color.fromARGB(255, 10, 44, 101), // dunkler Goldton
           ),
         ],
       ),
@@ -62,7 +62,7 @@ class MainMenu extends Component with HasGameReference<RogueliteGame> {
 
     // Title
     add(TextComponent(
-      text: 'Everfight',
+      text: 'EVERFIGHT',
       textRenderer: _titlePaint,
       anchor: Anchor.center,
       position: Vector2(size.x / 2, size.y * 0.2),
