@@ -1,3 +1,4 @@
+import 'package:everfight/util/size_utils.dart';
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flutter/material.dart';
@@ -12,12 +13,14 @@ class RectangleButton extends PositionComponent with TapCallbacks {
     required this.onPressed,
     this.colorType = ButtonColorType.green,
     this.icon,
+    this.groupTexts = const [],
   }) : super(position: position, size: size, anchor: Anchor.topLeft);
 
   final String label;
   final VoidCallback onPressed;
   final ButtonColorType colorType;
   final IconData? icon;
+  final List<String> groupTexts;
 
   static const _borderColor = Colors.black; // vorher: Color(0xFF2D2D2D)
 
@@ -93,11 +96,27 @@ class RectangleButton extends PositionComponent with TapCallbacks {
       textLeft = rect.left + 48;
     }
 
+    double textLeftWidth = rect.left + 18;
+    if (icon != null) textLeftWidth += 28 + 2;
+
+    double availableWidth = rect.width - (textLeftWidth - rect.left) - 12;
+    final fontSize = SizeUtils.fitTextPainter(
+      TextPainter(
+        textDirection: TextDirection.ltr,
+        maxLines: 1,
+      ),
+      availableWidth,
+      [label, ...groupTexts],
+      maxFontSize: 24,
+      minFontSize: 8,
+      letterSpacing: 1.5,
+    );
+
     // Label
-    final textPainter = TextPainter(
+    var textPainter = TextPainter(
       text: TextSpan(
         text: label.toUpperCase(),
-        style: const TextStyle(
+        style: TextStyle(
           color: Colors.black,
           fontSize: 22,
           fontWeight: FontWeight.w900,
@@ -107,6 +126,15 @@ class RectangleButton extends PositionComponent with TapCallbacks {
       textAlign: TextAlign.left,
       textDirection: TextDirection.ltr,
     )..layout(maxWidth: rect.right - textLeft - 12);
+
+    textPainter = SizeUtils.fitTextPainter(
+      textPainter,
+      availableWidth,
+      [label, ...groupTexts],
+      maxFontSize: 24,
+      minFontSize: 8,
+      letterSpacing: 1.5,
+    );
 
     textPainter.paint(
       canvas,

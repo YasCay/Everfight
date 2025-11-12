@@ -66,7 +66,6 @@ class MainMenu extends Component with HasGameReference<RogueliteGame> {
         'label': 'Start Run',
         'action': () {
           game.router.pushReplacementNamed('game');
-          // game.state = GamePhase.idle;
         },
         'color': ButtonColorType.green,
         'icon': Icons.arrow_forward,
@@ -85,6 +84,8 @@ class MainMenu extends Component with HasGameReference<RogueliteGame> {
       },
     ];
 
+    final buttonLabels = buttons.map((b) => b['label'] as String).toList();
+
     for (int i = 0; i < buttons.length; i++) {
       final btn = buttons[i];
       add(RectangleButton(
@@ -94,6 +95,7 @@ class MainMenu extends Component with HasGameReference<RogueliteGame> {
         onPressed: btn['action'] as VoidCallback,
         colorType: btn['color'] as ButtonColorType,
         icon: btn['icon'] as IconData?,
+        groupTexts: buttonLabels,
       ));
     }
   }
