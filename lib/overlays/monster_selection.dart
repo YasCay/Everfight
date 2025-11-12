@@ -56,6 +56,7 @@ class MonsterSelectionOverlay extends StatelessWidget {
                         if (!teamManager.isFull) {
                           // Add normally if there's space
                           teamManager.addOrExchange(m);
+                          game.hideMonsterSelection();
                         } else {
                           // Open exchange dialog
                           Navigator.of(context).push(
@@ -69,8 +70,6 @@ class MonsterSelectionOverlay extends StatelessWidget {
                             ),
                           );
                         }
-
-                        game.hideMonsterSelection();
                       },
                   )).toList(),
                 ),
