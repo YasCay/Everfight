@@ -11,6 +11,7 @@ class GamePhaseController {
 
   void startNewRun() {
     game.teamManager.clear();
+    game.bossManager.reset();
     game.currentLevel = 1;
     phase = GamePhase.selecting;
     game.showMonsterSelection();
@@ -49,6 +50,7 @@ class GamePhaseController {
     phase = GamePhase.defeat;
     game.currentLevel = 1;
     game.teamManager.clear();
+    game.bossManager.reset();
     game.router.pushReplacementNamed('menu');
     phase = GamePhase.init;
   }

@@ -179,7 +179,7 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
     if (isAnimating) return;
 
     timer += dt;
-    if (timer > 0.5) {
+    if (timer > 0.2) {
       timer = 0;
       _runNextTurn();
     }
@@ -312,7 +312,7 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
 
   void _onVictory() {
     game.phaseController.victory(() {
-      boss = game.bossManager.generateNextBoss(game.currentLevel + 1);
+      boss = game.bossManager.generateNextBoss(game.currentLevel);
       _loadBackground();
       var bossWidget = children.whereType<BossWidget>().first;
       remove(bossWidget);
