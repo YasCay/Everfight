@@ -1,6 +1,7 @@
 import 'package:everfight/models/enums.dart';
+import 'package:flutter/foundation.dart';
 
-class Boss {
+class Boss extends ChangeNotifier {
   final String name;
   final String imagePath;
   final int baseHealth;
@@ -41,10 +42,12 @@ class Boss {
     if (health < 0) {
       health = 0;
     }
+    notifyListeners();
   }
 
   void resetHealth() {
     health = baseHealth;
+    notifyListeners();
   }
 }
 

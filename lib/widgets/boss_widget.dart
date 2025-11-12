@@ -1,7 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:everfight/models/boss.dart';
-import 'package:everfight/widgets/monster_widget.dart';
+import 'package:everfight/widgets/health_bar_component.dart';
 import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
 import 'package:flame/extensions.dart';
@@ -11,8 +11,7 @@ import 'package:flutter/material.dart' hide Image;
 class BossWidget extends PositionComponent {
   Boss boss;
   late SpriteComponent _spriteComponent;
-  late ShapeComponent _hpBubble;
-  late TextComponent _hpText;
+  late HealthBarComponent _hpBubble;
   late ShapeComponent _attackBubble;
   late TextComponent _attackText;
   late TextPaint _textPaint;
@@ -66,19 +65,12 @@ class BossWidget extends PositionComponent {
       position: offset,
     );
 
-    _hpText = TextComponent(
-      text: '${boss.health}',
-      textRenderer: _textPaint,
-      anchor: Anchor.center,
-      position: Vector2(bubbleRadius, bubbleRadius),
-    );
-
-    _hpBubble = CircleComponent(
-      radius: bubbleRadius,
-      paint: Paint()..color = Colors.greenAccent,
-      position: Vector2(bubbleRadius, height - bubbleRadius),
-      anchor: Anchor.center,
-      children: [_hpText],
+    _hpBubble = HealthBarComponent(
+      owner: boss,
+      getCurrent: () => boss.health,
+      getMax: () => boss.baseHealth,
+      position: Vector2(8, height - 18),
+      size: Vector2(width * 0.5, 16),
     );
 
     _attackText = TextComponent(
@@ -110,7 +102,6 @@ class BossWidget extends PositionComponent {
 
   void takeDamage(int damage) {
     boss.takeDamage(damage);
-    _hpText.text = '${boss.health}';
 
     final hitEffect = ColorEffect(
       Colors.red.withValues(alpha: 0.5),
@@ -120,9 +111,13 @@ class BossWidget extends PositionComponent {
     _spriteComponent.add(hitEffect);
   }
 
-  void attack(MonsterWidget target, VoidCallback onHit) {
+  void attack({
+    required PositionComponent target,
+    required VoidCallback applyDamage,
+    required VoidCallback onAttackFinished,
+  }) {
     final monsterCenter = position + Vector2(width / 2, height / 2);
-    final bossCenter = target.position + Vector2(target.width / 2, target.height / 2);
+    final bossCenter = target.position + Vector2(target.size.x / 2, target.size.y / 2);
     final moveVector = (bossCenter - monsterCenter) * 0.5;
 
     final reverseAttackEffect = MoveByEffect(
@@ -134,9 +129,9 @@ class BossWidget extends PositionComponent {
       moveVector,
       EffectController(duration: 0.15),
       onComplete: () {
-        target.takeDamage(boss.attack);
+        applyDamage();
         add(reverseAttackEffect);
-        onHit();
+        onAttackFinished();
       },
     );
 

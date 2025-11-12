@@ -1,21 +1,21 @@
 import 'package:flame/components.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart' hide Image;
 
 /// A simple health bar component for Flame `PositionComponent`s.
 ///
-/// It listens to a [ChangeNotifier] owner and uses the provided
-/// getters to read current and max health. It renders a filled
-/// rounded rectangle representing remaining health and an optional
-/// percentage text on top.
+/// It can listen to an optional [Listenable] owner and uses the provided
+/// getters to read current and max health. It renders a filled rounded
+/// rectangle representing remaining health and an optional percentage text.
 class HealthBarComponent extends PositionComponent {
-  final ChangeNotifier owner;
+  final Listenable? owner;
   final int Function() getCurrent;
   final int Function() getMax;
   final double borderRadius;
   final TextPaint? textPaint;
 
   HealthBarComponent({
-    required this.owner,
+    this.owner,
     required this.getCurrent,
     required this.getMax,
     Vector2? position,
@@ -29,7 +29,7 @@ class HealthBarComponent extends PositionComponent {
   @override
   Future<void> onLoad() async {
     super.onLoad();
-    owner.addListener(_onOwnerChanged);
+    owner?.addListener(_onOwnerChanged);
     _internalTextPaint = textPaint ??
         TextPaint(
           style: const TextStyle(
@@ -47,7 +47,7 @@ class HealthBarComponent extends PositionComponent {
 
   @override
   void onRemove() {
-    owner.removeListener(_onOwnerChanged);
+    owner?.removeListener(_onOwnerChanged);
     super.onRemove();
   }
 

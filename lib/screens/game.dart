@@ -142,11 +142,17 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
     final monsterWidget = children.whereType<MonsterWidget>().firstWhere((mw) => mw.monster == monster);
     final bossWidget = children.whereType<BossWidget>().firstWhere((bw) => bw.boss == boss);
 
-    monsterWidget.attack(bossWidget, () {
-      if (boss.health <= 0) {
-        _onVictory();
-      }
-    });
+    monsterWidget.attack(
+      target: bossWidget,
+      applyDamage: () {
+        bossWidget.takeDamage(monster.baseAttack);
+      },
+      onAttackFinished: () {
+        if (boss.health <= 0) {
+          _onVictory();
+        }
+      },
+    );
   }
 
   void _bossAttack() {
@@ -162,15 +168,20 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
     final victimWidget = children.whereType<MonsterWidget>().firstWhere((mw) => mw.monster == victim);
     final bossWidget = children.whereType<BossWidget>().firstWhere((bw) => bw.boss == boss);
 
-    bossWidget.attack(victimWidget, () {
-      if (victim.health <= 0) {
-        // Check for defeat
-        final aliveMonsters = game.teamManager.team.where((m) => m.health > 0).toList();
-        if (aliveMonsters.isEmpty) {
-          _onDefeat();
+    bossWidget.attack(
+      target: victimWidget,
+      applyDamage: () {
+        victimWidget.takeDamage(boss.attack);
+      },
+      onAttackFinished: () {
+        if (victim.health <= 0) {
+          final aliveMonsters = game.teamManager.team.where((m) => m.health > 0).toList();
+          if (aliveMonsters.isEmpty) {
+            _onDefeat();
+          }
         }
-      }
-    });
+      },
+    );
   }
 
   void _onVictory() {
