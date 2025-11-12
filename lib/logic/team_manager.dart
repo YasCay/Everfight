@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:everfight/models/enums.dart';
+import 'package:everfight/models/game_state.dart';
 import 'package:everfight/models/monster.dart';
 import 'package:everfight/util/monster_layout.dart';
 import 'package:everfight/util/settings.dart';
@@ -117,6 +118,20 @@ class TeamManager extends ChangeNotifier {
 
   // Notify listeners to rerender team UI (buggy on skip action)
   void rerenderTeam() {
+    notifyListeners();
+  }
+
+  void loadState(GameState state) {
+    _team.clear();
+    for (var m in state.team) {
+      _team.add(Monster(
+        name: m.name,
+        baseHealth: m.baseHealth,
+        baseAttack: m.baseAttack,
+        element: m.element,
+        imagePath: m.imagePath,
+      ));
+    }
     notifyListeners();
   }
 }

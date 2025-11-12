@@ -42,6 +42,16 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
   }
 
   Future<void> _initRun() async {
+    if (game.currentLevel != 1 || game.teamManager.team.isNotEmpty) {
+      boss = game.bossManager.currentBoss ?? game.bossManager.generateNextBoss(game.currentLevel);
+      await _loadBackground();
+      _renderTeam();
+      _renderBoss();
+      
+      game.phaseController.onTeamSelected();
+      return;
+    }
+
     game.phaseController.startNewRun();
 
     boss = game.bossManager.generateNextBoss(game.currentLevel);

@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:everfight/models/game_state.dart';
 import 'package:everfight/util/settings.dart';
 import 'package:everfight/models/boss.dart';
 import 'package:everfight/models/enums.dart';
@@ -77,5 +78,18 @@ class BossManager {
   void reset() {
     _currentBossIndex = 0;
     _currentBoss = null;
+  }
+
+  void loadState(GameState state) {
+    _currentBossIndex = state.currentLevel - 1;
+    _currentBoss = state.currentBoss != null
+        ? Boss(
+            name: state.currentBoss!.name,
+            baseHealth: state.currentBoss!.baseHealth,
+            attack: state.currentBoss!.attack,
+            element: state.currentBoss!.element,
+            imagePath: state.currentBoss!.imagePath,
+          )
+        : null;
   }
 }

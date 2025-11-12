@@ -75,9 +75,8 @@ class MonsterExchangeOverlay extends StatelessWidget {
               ),
               const SizedBox(height: 20),
 
-              // 🔹 Horizontal scrolling list of cards
               SizedBox(
-                height: 220, // fits comfortably on mobile
+                height: 220,
                 child: ListView.separated(
                   scrollDirection: Axis.horizontal,
                   physics: const BouncingScrollPhysics(),
@@ -91,6 +90,7 @@ class MonsterExchangeOverlay extends StatelessWidget {
                       onTap: () {
                         teamManager.addOrExchange(newMonster, exchangeIndex: index);
                         Navigator.of(context).pop();
+                        game.hideMonsterSelection();
                       },
                     );
                   },

@@ -34,10 +34,14 @@ class GamePhaseController {
 
     game.healTeam();
 
-    if (game.currentLevel >= MAX_BOSS_COUNT) {
+    if (game.currentLevel > MAX_BOSS_COUNT) {
       game.router.pushReplacementNamed('menu');
-      phase = GamePhase.init;
+      reset();
+      game.saveGame();
     } else {
+      game.currentLevel--;
+      game.saveGame();
+      game.currentLevel++;
       // Show reward overlay and set next boss
       nextBossCallback();
       phase = GamePhase.selecting;
@@ -47,9 +51,16 @@ class GamePhaseController {
 
   void defeat() {
     phase = GamePhase.defeat;
+    game.router.pushReplacementNamed('menu');
+    reset();
+    game.saveGame();
+  }
+
+  void reset() {
     game.currentLevel = 1;
     game.teamManager.clear();
-    game.router.pushReplacementNamed('menu');
+    game.bossManager.reset();
+
     phase = GamePhase.init;
   }
 
