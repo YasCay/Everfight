@@ -61,6 +61,14 @@ class RogueliteGame extends FlameGame with HasKeyboardHandlerComponents {
     phaseController.onTeamSelected();
   }
 
+  showPauseMenu() {
+    overlays.add('PauseMenu');
+  }
+
+  void hidePauseMenu() {
+    overlays.remove('PauseMenu');
+  }
+
   void healTeam() {
     for (final m in teamManager.team) {
       m.resetHealth();

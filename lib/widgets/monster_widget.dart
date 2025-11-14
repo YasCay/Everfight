@@ -5,7 +5,6 @@ import 'package:everfight/widgets/damage_popup_component.dart';
 import 'package:everfight/widgets/health_bar_component.dart';
 import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
-import 'package:flame/extensions.dart';
 import 'package:flame/flame.dart';
 import 'package:flutter/material.dart' hide Image;
 
@@ -13,7 +12,6 @@ class MonsterWidget extends PositionComponent {
   final Monster monster;
   SpriteComponent? _spriteComponent;
   late HealthBarComponent _hpBubble;
-  late TextPaint _textPaint;
   @override
   final double width;
   @override
@@ -29,21 +27,6 @@ class MonsterWidget extends PositionComponent {
   @override
   Future<void> onLoad() async {
     await super.onLoad();
-
-    _textPaint = TextPaint(
-      style: const TextStyle(
-        fontSize: 12,
-        color: Colors.white,
-        fontWeight: FontWeight.bold,
-        shadows: [
-          Shadow(
-            offset: Offset(1, 1),
-            blurRadius: 2,
-            color: Colors.black,
-          ),
-        ],
-      ),
-    );
 
     final image = Flame.images.fromCache(monster.imagePath);
     final sprite = Sprite(image);
@@ -85,7 +68,7 @@ class MonsterWidget extends PositionComponent {
     final spriteComponent = _spriteComponent;
     if (spriteComponent != null) {
       final hitEffect = ColorEffect(
-        Colors.red.withOpacity(0.5),
+        Colors.red.withValues(alpha: 0.5),
         EffectController(duration: 0.1, reverseDuration: 0.1),
       );
       spriteComponent.add(hitEffect);

@@ -5,6 +5,7 @@ import 'package:everfight/models/monster.dart';
 import 'package:everfight/util/size_utils.dart';
 import 'package:everfight/widgets/boss_widget.dart';
 import 'package:everfight/widgets/monster_widget.dart';
+import 'package:everfight/widgets/pause_button.dart';
 import 'package:flame/components.dart';
 import 'package:flame/flame.dart';
 
@@ -31,7 +32,17 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
   Future<void> onMount() async {
     super.onMount();
 
+    var pauseButton = PauseButton(
+      onPressed: () {
+        game.pauseEngine();
+        game.showPauseMenu();
+      },
+    );
+    pauseButton.priority = 10;
+
+    add(pauseButton);
     game.teamManager.addListener(refreshTeamUI);
+    
     _initRun();
   }
 
@@ -42,6 +53,14 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
   }
 
   Future<void> _initRun() async {
+    var countMonsterWidgets = children.whereType<MonsterWidget>().length;
+    if (countMonsterWidgets > 0) {
+      if (debugMode) {
+        print('GameScene already initialized with $countMonsterWidgets monster widgets, skipping _initRun.');
+      }
+      return;
+    }
+
     if (game.currentLevel != 1 || game.teamManager.team.isNotEmpty) {
       boss = game.bossManager.currentBoss ?? game.bossManager.generateNextBoss(game.currentLevel);
       await _loadBackground();
