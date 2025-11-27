@@ -30,11 +30,13 @@ flutter:
     - assets/images/fakemons/water/
     - assets/images/fakemons/fire/
     - assets/images/fakemons/air/
+    - assets/data/monster.json
     # Bosses
     - assets/images/boss/earth/
     - assets/images/boss/water/
     - assets/images/boss/fire/
     - assets/images/boss/air/
+    - assets/data/boss.json
     # Backgrounds
     - assets/images/fightscene/air/
     - assets/images/fightscene/earth/

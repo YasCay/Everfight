@@ -1,5 +1,6 @@
 import 'package:everfight/game/game_phase.dart';
 import 'package:everfight/logic/game_class.dart';
+import 'package:everfight/logic/statistics_manager.dart';
 import 'package:everfight/util/settings.dart';
 
 class GamePhaseController {
@@ -10,6 +11,7 @@ class GamePhaseController {
   GamePhaseController(this.game);
 
   void startNewRun() {
+    StatisticsManager().recordRunStarted();
     game.teamManager.clear();
     game.currentLevel = 1;
     phase = GamePhase.selecting;
@@ -29,12 +31,17 @@ class GamePhaseController {
   }
 
   void victory(void Function() nextBossCallback) {
+    StatisticsManager().recordHighestLevel(game.currentLevel);
     phase = GamePhase.victory;
     game.currentLevel++;
 
     game.healTeam();
 
     if (game.currentLevel > MAX_BOSS_COUNT) {
+      StatisticsManager().recordRunWon();
+      for (var monster in game.teamManager.team) {
+        StatisticsManager().recordWinWithMonster(monster.name);
+      }
       game.router.pushReplacementNamed('menu');
       reset();
       game.saveGame();
@@ -50,6 +57,7 @@ class GamePhaseController {
   }
 
   void defeat() {
+    StatisticsManager().recordHighestLevel(game.currentLevel);
     phase = GamePhase.defeat;
     game.router.pushReplacementNamed('menu');
     reset();
@@ -62,6 +70,11 @@ class GamePhaseController {
     game.bossManager.reset();
 
     phase = GamePhase.init;
+  }
+
+  void restartRun() {
+    reset();
+    phase = GamePhase.restarting;
   }
 
   bool get isCombatReady => phase == GamePhase.idle;

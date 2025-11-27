@@ -1,0 +1,130 @@
+[
+  {
+    "name": "Basaltor",
+    "baseHp": 90,
+    "baseDamage": 10,
+    "element": "earth",
+    "imagePath": "fakemons/earth/Basaltor_front.png",
+    "tier": 1
+  },
+  {
+    "name": "Claywolf",
+    "baseHp": 90,
+    "baseDamage": 10,
+    "element": "earth",
+    "imagePath": "fakemons/earth/Claywolf_front.png",
+    "tier": 2
+  },
+  {
+    "name": "Mudcrust",
+    "baseHp": 90,
+    "baseDamage": 10,
+    "element": "earth",
+    "imagePath": "fakemons/earth/Mudcrust_front.png",
+    "tier": 3
+  },
+  {
+    "name": "Thornolotl",
+    "baseHp": 90,
+    "baseDamage": 10,
+    "element": "earth",
+    "imagePath": "fakemons/earth/Thornolotl_front.png",
+    "tier": 4
+  },
+  {
+    "name": "Tidepanzer",
+    "baseHp": 80,
+    "baseDamage": 18,
+    "element": "water",
+    "imagePath": "fakemons/water/Tidepanzer_front.png",
+    "tier": 1
+  },
+  {
+    "name": "MistRay",
+    "baseHp": 80,
+    "baseDamage": 18,
+    "element": "water",
+    "imagePath": "fakemons/water/MistRay_front.png",
+    "tier": 2
+  },
+  {
+    "name": "Splashling",
+    "baseHp": 80,
+    "baseDamage": 18,
+    "element": "water",
+    "imagePath": "fakemons/water/Splashling_front.png",
+    "tier": 3
+  },
+  {
+    "name": "Voltcarp",
+    "baseHp": 80,
+    "baseDamage": 18,
+    "element": "water",
+    "imagePath": "fakemons/water/Voltcarp_front.png",
+    "tier": 4
+  },
+  {
+    "name": "Ashblade",
+    "baseHp": 65,
+    "baseDamage": 23,
+    "element": "fire",
+    "imagePath": "fakemons/fire/Ashblade_front.png",
+    "tier": 1
+  },
+  {
+    "name": "CoalGolem",
+    "baseHp": 65,
+    "baseDamage": 23,
+    "element": "fire",
+    "imagePath": "fakemons/fire/CoalGolem_front.png",
+    "tier": 2
+  },
+  {
+    "name": "Pyrosalamander",
+    "baseHp": 65,
+    "baseDamage": 23,
+    "element": "fire",
+    "imagePath": "fakemons/fire/Pyrosalamander_front.png",
+    "tier": 3
+  },
+  {
+    "name": "Sparkfinch",
+    "baseHp": 65,
+    "baseDamage": 23,
+    "element": "fire",
+    "imagePath": "fakemons/fire/Sparkfinch_front.png",
+    "tier": 4
+  },
+  {
+    "name": "Stormgryph",
+    "baseHp": 70,
+    "baseDamage": 20,
+    "element": "air",
+    "imagePath": "fakemons/air/Stormgryph_front.png",
+    "tier": 1
+  },
+  {
+    "name": "Galehawk",
+    "baseHp": 70,
+    "baseDamage": 20,
+    "element": "air",
+    "imagePath": "fakemons/air/Galehawk_front.png",
+    "tier": 2
+  },
+  {
+    "name": "HazeFairy",
+    "baseHp": 70,
+    "baseDamage": 20,
+    "element": "air",
+    "imagePath": "fakemons/air/HazeFairy_front.png",
+    "tier": 3
+  },
+  {
+    "name": "Whirlstag",
+    "baseHp": 70,
+    "baseDamage": 20,
+    "element": "air",
+    "imagePath": "fakemons/air/Whirlstag_front.png",
+    "tier": 4
+  }
+]

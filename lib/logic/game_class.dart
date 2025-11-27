@@ -1,6 +1,10 @@
 import 'package:everfight/logic/boss_manager.dart';
+import 'package:everfight/logic/boss_repository.dart';
 import 'package:everfight/logic/game_phase_controller.dart';
+import 'package:everfight/logic/monster_repository.dart';
+import 'package:everfight/logic/statistics_manager.dart';
 import 'package:everfight/logic/team_manager.dart';
+import 'package:everfight/logic/unlock_manager.dart';
 import 'package:everfight/models/game_state.dart';
 import 'package:everfight/screens/achievements.dart';
 import 'package:everfight/screens/game.dart';
@@ -26,8 +30,13 @@ class RogueliteGame extends FlameGame with HasKeyboardHandlerComponents {
 
   @override
   Future<void> onLoad() async {
-    await Flame.images.loadAll(GameAssets.all);
     await super.onLoad();
+
+    await UnlockManager().init();
+    await StatisticsManager().init();
+    await Flame.images.loadAll(GameAssets.all);
+    await MonsterRepository().load();
+    await BossRepository().load();
     
     router = RouterComponent(
       initialRoute: 'menu',
@@ -82,5 +91,14 @@ class RogueliteGame extends FlameGame with HasKeyboardHandlerComponents {
       currentBoss: bossManager.currentBoss,
     );
     LocalStorage.saveState(state);
+  }
+
+  void resetRun() {
+    teamManager.clear();
+    bossManager.reset();
+    currentLevel = 1;
+    saveGame();
+    phaseController.restartRun();
+    resumeEngine();
   }
 }
