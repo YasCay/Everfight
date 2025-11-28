@@ -43,6 +43,8 @@ flutter:
     - assets/images/fightscene/fire/
     - assets/images/fightscene/water/
     - assets/images/general/splash_bg.png
+    # Other assets
+    - assets/data/achievements.json
 
 # Flutter Native Splash configuration
 flutter_native_splash:

@@ -1,3 +1,4 @@
+import 'package:everfight/logic/achievement_manager.dart';
 import 'package:everfight/logic/boss_manager.dart';
 import 'package:everfight/logic/boss_repository.dart';
 import 'package:everfight/logic/game_phase_controller.dart';
@@ -34,6 +35,7 @@ class RogueliteGame extends FlameGame with HasKeyboardHandlerComponents {
 
     await UnlockManager().init();
     await StatisticsManager().init();
+    await AchievementManager().init();
     await Flame.images.loadAll(GameAssets.all);
     await MonsterRepository().load();
     await BossRepository().load();
@@ -42,7 +44,6 @@ class RogueliteGame extends FlameGame with HasKeyboardHandlerComponents {
       initialRoute: 'menu',
       routes: {
         'menu': Route(MainMenu.new),
-        'achievements': Route(AchievementsScene.new),
         'unlockables': Route(UnlockablesScene.new),
         'game': Route(GameScene.new),
       },

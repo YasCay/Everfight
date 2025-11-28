@@ -1,0 +1,23 @@
+[
+  {
+    "id": "first_kill",
+    "title": "First Kill",
+    "description": "Kill your first boss.",
+    "condition": { "stat": "bossesDefeated", "operator": ">=", "value": 1 },
+    "unlock": null
+  },
+  {
+    "id": "boss_slayer",
+    "title": "Boss Slayer",
+    "description": "Defeat 100 bosses.",
+    "condition": { "stat": "bossesDefeated", "operator": ">=", "value": 100 },
+    "unlock": null
+  },
+  {
+    "id": "first_time_winner",
+    "title": "Win your first run.",
+    "description": "Defeat 100 bosses in a single run.",
+    "condition": { "stat": "runsWon", "operator": ">=", "value": 1 },
+    "unlock": null
+  }
+]

@@ -1,3 +1,4 @@
+import 'package:everfight/logic/achievement_manager.dart';
 import 'package:everfight/models/enums.dart';
 import 'package:everfight/models/statistics.dart';
 import 'package:everfight/util/local_storage.dart';
@@ -15,10 +16,12 @@ class StatisticsManager {
     if (_initialized) return;
 
     statistics = await LocalStorage.loadStatistics() ?? Statistics();
+    print('Loaded statistics: $statistics');
     _initialized = true;
   }
 
   Future<void> _save() async {
+    AchievementManager().evaluate(statistics);
     await LocalStorage.saveStatistics(statistics);
   }
 

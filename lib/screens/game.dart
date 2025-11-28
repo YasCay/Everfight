@@ -247,7 +247,7 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
     bossWidget.attack(
       target: victimWidget,
       applyDamage: () {
-        StatisticsManager().recordDamageDealt(victim.name, boss.attack);
+        StatisticsManager().recordDamageTaken(boss.attack);
         victimWidget.takeDamage(boss.attack);
       },
       onAttackFinished: () {
@@ -284,6 +284,7 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
 
   void _onVictory() {
     game.phaseController.victory(() {
+      StatisticsManager().recordBossDefeated(boss.element);
       boss = game.bossManager.generateNextBoss(game.currentLevel + 1);
       _loadBackground();
       var bossWidget = children.whereType<BossWidget>().first;

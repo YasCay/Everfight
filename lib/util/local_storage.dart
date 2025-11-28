@@ -9,6 +9,7 @@ class LocalStorage {
   static const _gameStateKey = 'game_state';
   static const _tierKey = 'unlocked_tiers';
   static const _statisticsKey = "game_statistics_v1";
+  static const _achievementsKey = "unlocked_achievements";
 
   /// Save the current state to local storage
   static Future<void> saveState(GameState state) async {
@@ -78,6 +79,22 @@ class LocalStorage {
       }
     }
     return null; // no statistics saved yet
+  }
+
+  /// Load unlocked achievements
+  static Future<Set<String>> loadUnlockedAchievements() async {
+    final prefs = await SharedPreferences.getInstance();
+    final ids = prefs.getStringList(_achievementsKey);
+    if (ids != null) {
+      return ids.toSet();
+    }
+    return {};
+  }
+
+  /// Save unlocked achievements
+  static Future<void> saveUnlockedAchievements(Set<String> ids) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList(_achievementsKey, ids.toList());
   }
 
   /// Clear saved state

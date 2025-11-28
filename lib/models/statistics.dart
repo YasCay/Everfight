@@ -15,6 +15,22 @@ class Statistics {
   Map<String, int> monsterDamageDealt = {};
   Map<String, int> monsterDeaths = {};
 
+  int get bossesDefeated {
+    return bossesDefeatedByElement.values.fold(0, (a, b) => a + b);
+  }
+
+  num getStatValue(String stat) {
+    switch (stat) {
+      case 'runsStarted': return runsStarted;
+      case 'runsWon': return runsWon;
+      case 'highestLevelReached': return highestLevelReached;
+      case 'totalDamageDealt': return totalDamageDealt;
+      case 'totalDamageTaken': return totalDamageTaken;
+      case 'bossesDefeated': return bossesDefeated;
+      default: return 0;
+    }
+  }
+
   Statistics();
   
   factory Statistics.fromJson(Map<String, dynamic> json) {
@@ -47,5 +63,13 @@ class Statistics {
       'monsterDamageDealt': monsterDamageDealt,
       'monsterDeaths': monsterDeaths,
     };
+  }
+
+  @override
+  String toString() {
+    return 'Statistics(runsStarted: $runsStarted, runsWon: $runsWon, highestLevelReached: $highestLevelReached, '
+        'bossesDefeatedByElement: $bossesDefeatedByElement, monsterPicked: $monsterPicked, winsWithMonster: $winsWithMonster, '
+        'totalDamageDealt: $totalDamageDealt, totalDamageTaken: $totalDamageTaken, '
+        'monsterDamageDealt: $monsterDamageDealt, monsterDeaths: $monsterDeaths)';
   }
 }
