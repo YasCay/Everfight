@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:everfight/logic/achievement_manager.dart';
 import 'package:everfight/logic/boss_manager.dart';
 import 'package:everfight/logic/boss_repository.dart';
@@ -7,7 +9,6 @@ import 'package:everfight/logic/statistics_manager.dart';
 import 'package:everfight/logic/team_manager.dart';
 import 'package:everfight/logic/unlock_manager.dart';
 import 'package:everfight/models/game_state.dart';
-import 'package:everfight/screens/achievements.dart';
 import 'package:everfight/screens/game.dart';
 import 'package:everfight/screens/main_menu.dart';
 import 'package:everfight/screens/unlockables.dart';
@@ -28,6 +29,10 @@ class RogueliteGame extends FlameGame with HasKeyboardHandlerComponents {
   late BossManager bossManager;
 
   int currentLevel = 1;
+
+  String currentOverlayTitle = '';
+  String currentOverlayButtonText = '';
+  VoidCallback? currentOverlayCallback;
 
   @override
   Future<void> onLoad() async {
@@ -71,12 +76,26 @@ class RogueliteGame extends FlameGame with HasKeyboardHandlerComponents {
     phaseController.onTeamSelected();
   }
 
-  showPauseMenu() {
+  void showPauseMenu() {
     overlays.add('PauseMenu');
   }
 
   void hidePauseMenu() {
     overlays.remove('PauseMenu');
+  }
+
+  void showWinOverlay(VoidCallback onPressed) {
+    currentOverlayTitle = "YOU WIN!";
+    currentOverlayButtonText = "Continue";
+    currentOverlayCallback = onPressed;
+    overlays.add('winLoseOverlay');
+  }
+
+  void showLoseOverlay(VoidCallback onPressed) {
+    currentOverlayTitle = "YOU DIED";
+    currentOverlayButtonText = "Try Again";
+    currentOverlayCallback = onPressed;
+    overlays.add('winLoseOverlay');
   }
 
   void healTeam() {

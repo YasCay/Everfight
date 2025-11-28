@@ -67,6 +67,9 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
       return;
     }
 
+    removeAll(children);
+    addPauseButton();
+
     isAnimating = false;
     turnQueue.clear();
     currentTurnIndex = 0;
@@ -140,6 +143,8 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
     }
 
     if (phase == GamePhase.selecting) return;
+    if (phase == GamePhase.victory) return;
+    if (phase == GamePhase.defeat) return;
 
     if (phase == GamePhase.idle) {
       _startTurnOrder();
@@ -283,8 +288,8 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
   }
 
   void _onVictory() {
+    StatisticsManager().recordBossDefeated(boss.element);
     game.phaseController.victory(() {
-      StatisticsManager().recordBossDefeated(boss.element);
       boss = game.bossManager.generateNextBoss(game.currentLevel + 1);
       _loadBackground();
       var bossWidget = children.whereType<BossWidget>().first;

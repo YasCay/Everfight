@@ -38,13 +38,18 @@ class GamePhaseController {
     game.healTeam();
 
     if (game.currentLevel > MAX_BOSS_COUNT) {
+      game.pauseEngine();
       StatisticsManager().recordRunWon();
       for (var monster in game.teamManager.team) {
         StatisticsManager().recordWinWithMonster(monster.name);
       }
-      game.router.pushReplacementNamed('menu');
-      reset();
-      game.saveGame();
+      game.showWinOverlay(() {
+        reset();
+        game.saveGame();
+        game.router.pushReplacementNamed('menu');
+        game.overlays.remove('winLoseOverlay');
+        game.resumeEngine();
+      });
     } else {
       game.currentLevel--;
       game.saveGame();
@@ -57,11 +62,16 @@ class GamePhaseController {
   }
 
   void defeat() {
+    game.pauseEngine();
     StatisticsManager().recordHighestLevel(game.currentLevel);
     phase = GamePhase.defeat;
-    game.router.pushReplacementNamed('menu');
-    reset();
-    game.saveGame();
+    game.showLoseOverlay(() {
+      reset();
+      game.saveGame();
+      game.router.pushReplacementNamed('menu');
+      game.overlays.remove('winLoseOverlay');
+      game.resumeEngine();
+    });
   }
 
   void reset() {
