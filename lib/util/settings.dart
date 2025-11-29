@@ -2,7 +2,7 @@
 
 const DEBUG_MODE = false;
 
-const MAX_BOSS_COUNT = 1;
+const MAX_BOSS_COUNT = 10;
 const BOSS_HP_PER_LEVEL_GROWTH = 1.08;
 const BOSS_ATK_PER_LEVEL_GROWTH = 1.1;
 const BOSS_RANDOM_STAT_VARIATION = 0.05;

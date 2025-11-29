@@ -21,31 +21,39 @@ class Statistics {
 
   num getStatValue(String stat) {
     switch (stat) {
-      case 'runsStarted': return runsStarted;
-      case 'runsWon': return runsWon;
-      case 'highestLevelReached': return highestLevelReached;
-      case 'totalDamageDealt': return totalDamageDealt;
-      case 'totalDamageTaken': return totalDamageTaken;
-      case 'bossesDefeated': return bossesDefeated;
-      default: return 0;
+      case 'runsStarted':
+        return runsStarted;
+      case 'runsWon':
+        return runsWon;
+      case 'highestLevelReached':
+        return highestLevelReached;
+      case 'totalDamageDealt':
+        return totalDamageDealt;
+      case 'totalDamageTaken':
+        return totalDamageTaken;
+      case 'bossesDefeated':
+        return bossesDefeated;
+      default:
+        return 0;
     }
   }
 
   Statistics();
-  
+
   factory Statistics.fromJson(Map<String, dynamic> json) {
     return Statistics()
       ..runsStarted = json['runsStarted'] ?? 0
       ..runsWon = json['runsWon'] ?? 0
       ..highestLevelReached = json['highestLevelReached'] ?? 0
       ..bossesDefeatedByElement = Map<Element, int>.from(
-          (json['bossesDefeatedByElement'] ?? {}).map((key, value) =>
-              MapEntry(Element.values.firstWhere((e) => e.toString() == key), value)))
+          (json['bossesDefeatedByElement'] ?? {}).map((key, value) => MapEntry(
+              Element.values.firstWhere((e) => e.toString() == key), value)))
       ..monsterPicked = Map<String, int>.from(json['monsterPicked'] ?? {})
       ..winsWithMonster = Map<String, int>.from(json['winsWithMonster'] ?? {})
       ..totalDamageDealt = json['totalDamageDealt'] ?? 0
       ..totalDamageTaken = json['totalDamageTaken'] ?? 0
-      ..monsterDamageDealt = Map<String, int>.from(json['monsterDamageDealt'] ?? {})
+      ..monsterDamageDealt =
+          Map<String, int>.from(json['monsterDamageDealt'] ?? {})
       ..monsterDeaths = Map<String, int>.from(json['monsterDeaths'] ?? {});
   }
 
@@ -54,8 +62,8 @@ class Statistics {
       'runsStarted': runsStarted,
       'runsWon': runsWon,
       'highestLevelReached': highestLevelReached,
-      'bossesDefeatedByElement': bossesDefeatedByElement.map((key, value) =>
-          MapEntry(key.toString(), value)),
+      'bossesDefeatedByElement': bossesDefeatedByElement
+          .map((key, value) => MapEntry(key.toString(), value)),
       'monsterPicked': monsterPicked,
       'winsWithMonster': winsWithMonster,
       'totalDamageDealt': totalDamageDealt,
