@@ -17,9 +17,8 @@ class MonsterRepository {
     final jsonString = await rootBundle.loadString('assets/data/monster.json');
     final List<dynamic> jsonList = json.decode(jsonString);
 
-    allTemplates = jsonList
-        .map((json) => MonsterTemplate.fromJson(json))
-        .toList();
+    allTemplates =
+        jsonList.map((json) => MonsterTemplate.fromJson(json)).toList();
 
     _buildTemplateMap();
   }

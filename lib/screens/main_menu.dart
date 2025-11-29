@@ -18,7 +18,8 @@ class MainMenu extends Component with HasGameReference<RogueliteGame> {
         fontSize: 48,
         color: Color(0xFFFFD700), // Goldgelb
         fontWeight: FontWeight.w900,
-        fontFamily: 'Orbitron', // Eigene Schriftart, in pubspec.yaml registrieren!
+        fontFamily:
+            'Orbitron', // Eigene Schriftart, in pubspec.yaml registrieren!
         letterSpacing: 3,
         shadows: [
           Shadow(
@@ -53,7 +54,7 @@ class MainMenu extends Component with HasGameReference<RogueliteGame> {
       sprite: Sprite(await game.images.load('general/splash_bg.png')),
       size: size.clone(),
       position: Vector2.zero(),
-      anchor: Anchor.topLeft, 
+      anchor: Anchor.topLeft,
       priority: -2,
     ));
     add(RectangleComponent(
@@ -76,8 +77,10 @@ class MainMenu extends Component with HasGameReference<RogueliteGame> {
     final buttonHeight = SizeUtils.scalePercentage(size.y, 14);
     final spacing = SizeUtils.scalePercentage(size.y, 5);
     final totalButtons = 3;
-    final totalHeight = totalButtons * buttonHeight + (totalButtons - 1) * spacing;
-    final startY = (size.y - totalHeight) / 2 + SizeUtils.scalePercentage(size.y, 10);
+    final totalHeight =
+        totalButtons * buttonHeight + (totalButtons - 1) * spacing;
+    final startY =
+        (size.y - totalHeight) / 2 + SizeUtils.scalePercentage(size.y, 10);
 
     final buttons = [
       {
@@ -130,7 +133,8 @@ class MainMenu extends Component with HasGameReference<RogueliteGame> {
       final btn = buttons[i];
       add(RectangleButton(
         label: btn['label'] as String,
-        position: Vector2(size.x / 2 - buttonWidth / 2, startY + i * (buttonHeight + spacing)),
+        position: Vector2(size.x / 2 - buttonWidth / 2,
+            startY + i * (buttonHeight + spacing)),
         size: Vector2(buttonWidth, buttonHeight),
         onPressed: btn['action'] as VoidCallback,
         colorType: btn['color'] as ButtonColorType,

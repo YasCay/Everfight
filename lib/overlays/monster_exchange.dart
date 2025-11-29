@@ -58,7 +58,8 @@ class MonsterExchangeOverlay extends StatelessWidget {
                       TextButton(
                         style: TextButton.styleFrom(
                           foregroundColor: Colors.white70,
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 4),
                           backgroundColor: Colors.grey[800],
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8),
@@ -73,15 +74,12 @@ class MonsterExchangeOverlay extends StatelessWidget {
                       ),
                     ],
                   ),
-
                   Text(
                     'Replace one of your monsters with ${newMonster.name}:',
                     style: const TextStyle(color: Colors.white70, fontSize: 15),
                     textAlign: TextAlign.center,
                   ),
-
                   SizedBox(height: boxSize),
-
                   SizedBox(
                     height: candidateHeight,
                     child: ListView.separated(
@@ -95,7 +93,8 @@ class MonsterExchangeOverlay extends StatelessWidget {
                         return CandidateCard(
                           monster: current,
                           onTap: () {
-                            teamManager.addOrExchange(newMonster, exchangeIndex: index);
+                            teamManager.addOrExchange(newMonster,
+                                exchangeIndex: index);
                             Navigator.of(context).pop();
                             game.hideMonsterSelection();
                           },
@@ -109,7 +108,6 @@ class MonsterExchangeOverlay extends StatelessWidget {
               ),
             ),
           ),
-
           Positioned(
             bottom: SizeUtils.scalePercentage(game.size.y, 3),
             left: 0,

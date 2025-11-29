@@ -5,7 +5,7 @@ class SizeUtils {
     var newSize = baseSize * (percentage / 100);
     return (newSize * 10).floorToDouble() / 10;
   }
-  
+
   static double fitTextPainter(
     TextPainter textPainter,
     double containerWidth,
@@ -13,7 +13,8 @@ class SizeUtils {
     double maxFontSize = 24,
     double minFontSize = 6,
   }) {
-    final baseStyle = (textPainter.text as TextSpan?)?.style ?? const TextStyle();
+    final baseStyle =
+        (textPainter.text as TextSpan?)?.style ?? const TextStyle();
     double fontSize = minFontSize;
     double lastFittingSize = minFontSize;
 

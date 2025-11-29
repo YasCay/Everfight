@@ -30,18 +30,25 @@ class Statistics {
 
   num getStatValue(String stat) {
     switch (stat) {
-      case 'runsStarted': return runsStarted;
-      case 'runsWon': return runsWon;
-      case 'highestLevelReached': return highestLevelReached;
-      case 'totalDamageDealt': return totalDamageDealt;
-      case 'totalDamageTaken': return totalDamageTaken;
-      case 'bossesDefeated': return bossesDefeated;
-      default: return 0;
+      case 'runsStarted':
+        return runsStarted;
+      case 'runsWon':
+        return runsWon;
+      case 'highestLevelReached':
+        return highestLevelReached;
+      case 'totalDamageDealt':
+        return totalDamageDealt;
+      case 'totalDamageTaken':
+        return totalDamageTaken;
+      case 'bossesDefeated':
+        return bossesDefeated;
+      default:
+        return 0;
     }
   }
 
   Statistics();
-  
+
   factory Statistics.fromJson(Map<String, dynamic> json) {
     return Statistics()
       ..runsStarted = json['runsStarted'] ?? 0
@@ -57,7 +64,8 @@ class Statistics {
       ..winsWithMonster = Map<String, int>.from(json['winsWithMonster'] ?? {})
       ..totalDamageDealt = json['totalDamageDealt'] ?? 0
       ..totalDamageTaken = json['totalDamageTaken'] ?? 0
-      ..monsterDamageDealt = Map<String, int>.from(json['monsterDamageDealt'] ?? {})
+      ..monsterDamageDealt =
+          Map<String, int>.from(json['monsterDamageDealt'] ?? {})
       ..monsterDeaths = Map<String, int>.from(json['monsterDeaths'] ?? {});
   }
 

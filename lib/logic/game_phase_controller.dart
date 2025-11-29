@@ -13,6 +13,7 @@ class GamePhaseController {
   void startNewRun() {
     StatisticsManager().recordRunStarted();
     game.teamManager.clear();
+    game.bossManager.reset();
     game.currentLevel = 1;
     phase = GamePhase.selecting;
     game.showMonsterSelection();

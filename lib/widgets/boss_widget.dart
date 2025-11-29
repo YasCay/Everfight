@@ -22,7 +22,10 @@ class BossWidget extends PositionComponent {
     required Vector2 position,
     required this.width,
     required this.height,
-  }) : super(position: position, size: Vector2(width, height), anchor: Anchor.topLeft);
+  }) : super(
+            position: position,
+            size: Vector2(width, height),
+            anchor: Anchor.topLeft);
 
   @override
   Future<void> onLoad() async {
@@ -66,7 +69,12 @@ class BossWidget extends PositionComponent {
   @override
   void render(Canvas canvas) {
     final rect = Rect.fromLTWH(0, 0, size.x, size.y);
-    canvas.drawRect(rect, Paint()..color = Colors.white.withValues(alpha: 0)..style = PaintingStyle.stroke..strokeWidth = 2);
+    canvas.drawRect(
+        rect,
+        Paint()
+          ..color = Colors.white.withValues(alpha: 0)
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 2);
     super.render(canvas);
   }
 
@@ -93,7 +101,8 @@ class BossWidget extends PositionComponent {
     required VoidCallback onAttackFinished,
   }) {
     final monsterCenter = position + Vector2(width / 2, height / 2);
-    final bossCenter = target.position + Vector2(target.size.x / 2, target.size.y / 2);
+    final bossCenter =
+        target.position + Vector2(target.size.x / 2, target.size.y / 2);
     final moveVector = (bossCenter - monsterCenter) * 0.5;
 
     final reverseAttackEffect = MoveByEffect(

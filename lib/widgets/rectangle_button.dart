@@ -93,7 +93,8 @@ class RectangleButton extends PositionComponent with TapCallbacks {
 
       iconPainter.paint(
         canvas,
-        Offset(rect.left + SizeUtils.scalePercentage(rect.width, 4.5), rect.top + (rect.height - iconPainter.height) / 2),
+        Offset(rect.left + SizeUtils.scalePercentage(rect.width, 4.5),
+            rect.top + (rect.height - iconPainter.height) / 2),
       );
       textLeft = textLeft + iconPainter.width;
     }
@@ -140,7 +141,9 @@ class RectangleButton extends PositionComponent with TapCallbacks {
       textDirection: TextDirection.ltr,
       maxLines: 1,
       ellipsis: '',
-    )..layout(maxWidth: rect.right - textLeft - SizeUtils.scalePercentage(rect.width, 4.5));
+    )..layout(
+        maxWidth:
+            rect.right - textLeft - SizeUtils.scalePercentage(rect.width, 4.5));
 
     textPainter.paint(
       canvas,

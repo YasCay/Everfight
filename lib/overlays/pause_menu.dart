@@ -125,7 +125,8 @@ class PauseMenuOverlay extends StatelessWidget {
               // BUILD MENU BUTTONS
               for (int i = 0; i < buttons.length; i++)
                 Padding(
-                  padding: EdgeInsets.only(bottom: i == buttons.length - 1 ? 0 : spacing),
+                  padding: EdgeInsets.only(
+                      bottom: i == buttons.length - 1 ? 0 : spacing),
                   child: FlutterRectangleButton(
                     label: buttons[i]['label'] as String,
                     onPressed: buttons[i]['action'] as VoidCallback,

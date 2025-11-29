@@ -25,13 +25,15 @@ void main() async {
       home: GameWidget(
         game: RogueliteGame(),
         overlayBuilderMap: {
-          'MonsterSelectionOverlay': (context, game) => MonsterSelectionOverlay(game: game as RogueliteGame),
-          'PauseMenu': (context, game) => PauseMenuOverlay(game: game as RogueliteGame),
+          'MonsterSelectionOverlay': (context, game) =>
+              MonsterSelectionOverlay(game: game as RogueliteGame),
+          'PauseMenu': (context, game) =>
+              PauseMenuOverlay(game: game as RogueliteGame),
           'winLoseOverlay': (context, game) => WinLoseOverlay(
-            title: (game as RogueliteGame).currentOverlayTitle,
-            buttonText: game.currentOverlayButtonText,
-            onPressed: game.currentOverlayCallback!,
-          ),
+                title: (game as RogueliteGame).currentOverlayTitle,
+                buttonText: game.currentOverlayButtonText,
+                onPressed: game.currentOverlayCallback!,
+              ),
         },
       ),
     ),
