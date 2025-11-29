@@ -65,8 +65,9 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
     levelText = TextComponent(
       text: 'Level ${game.currentLevel}',
       textRenderer: _textPaintForLevel(game.currentLevel, fontSize),
+      anchor: Anchor.topRight,
     )
-      ..position = Vector2(8, 8)
+      ..position = Vector2(game.size.x - 8, 8)
       ..priority = 100; // ensure it's on top
 
     add(levelText);
