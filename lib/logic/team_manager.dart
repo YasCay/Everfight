@@ -1,6 +1,7 @@
 import 'package:everfight/logic/monster_generator.dart';
 import 'package:everfight/logic/monster_repository.dart';
 import 'package:everfight/logic/statistics_manager.dart';
+import 'package:everfight/models/enums.dart';
 import 'package:everfight/models/game_state.dart';
 import 'package:everfight/models/monster.dart';
 import 'package:everfight/util/monster_layout.dart';
@@ -104,6 +105,12 @@ class TeamManager extends ChangeNotifier {
     return false; // Team full and no valid exchange index provided
   }
 
+  int countMonstersOfTierAndElement(int tier, Element element) {
+    return _team
+        .where((m) => m.tier == tier && m.element == element)
+        .length;
+  }
+
   // Notify listeners to rerender team UI (buggy on skip action)
   void rerenderTeam() {
     notifyListeners();
@@ -118,6 +125,7 @@ class TeamManager extends ChangeNotifier {
         baseAttack: m.baseAttack,
         element: m.element,
         imagePath: m.imagePath,
+        tier: m.tier,
       ));
     }
     notifyListeners();

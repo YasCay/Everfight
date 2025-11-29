@@ -5,11 +5,13 @@ import 'package:flutter/material.dart';
 class AchievementsScreen extends StatelessWidget {
   final List<Achievement> achievements;
   final Statistics stats;
+  final bool isUnlockableScreen;
 
   const AchievementsScreen({
     super.key,
     required this.achievements,
     required this.stats,
+    required this.isUnlockableScreen
   });
 
   double _progress(Achievement a) {
@@ -22,12 +24,17 @@ class AchievementsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final sorted = [...achievements]
+    var title = isUnlockableScreen ? "Unlockables" : "Achievements";
+    var elements = isUnlockableScreen
+        ? achievements.where((a) => a.unlock != null).toList()
+        : achievements.where((a) => a.unlock == null).toList();
+
+    final sorted = [...elements]
       ..sort((a, b) => _progress(b).compareTo(_progress(a)));
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Achievements"),
+        title: Text(title),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),

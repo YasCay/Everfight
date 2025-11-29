@@ -27,6 +27,7 @@ class StatisticsManager {
 
   void recordRunStarted() {
     statistics.runsStarted++;
+    statistics.bossesDefeatedByElementRun.clear();
     _save();
   }
 
@@ -45,6 +46,9 @@ class StatisticsManager {
   void recordBossDefeated(Element element) {
     statistics.bossesDefeatedByElement[element] =
         (statistics.bossesDefeatedByElement[element] ?? 0) + 1;
+
+    statistics.bossesDefeatedByElementRun[element] =
+        (statistics.bossesDefeatedByElementRun[element] ?? 0) + 1;
     _save();
   }
 

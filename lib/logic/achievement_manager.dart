@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'package:everfight/logic/game_class.dart';
+import 'package:everfight/logic/unlock_manager.dart';
 import 'package:everfight/models/achievement.dart';
 import 'package:everfight/models/achievement_condition.dart';
 import 'package:everfight/models/enums.dart';
@@ -10,13 +12,16 @@ import 'package:flutter/services.dart';
 class AchievementManager {
   late List<Achievement> achievements;
   final Set<String> unlockedIds = {};
+  late RogueliteGame game;
 
   // Singleton
   static final AchievementManager _instance = AchievementManager._internal();
   factory AchievementManager() => _instance;
   AchievementManager._internal();
 
-  Future<void> init() async {
+  Future<void> init(RogueliteGame game) async {
+    this.game = game;
+
     // Load unlocked IDs
     unlockedIds.addAll(await LocalStorage.loadUnlockedAchievements());
 
@@ -59,6 +64,37 @@ class AchievementManager {
   }
 
   dynamic _getStatValue(String path, Statistics s) {
+    if (path.startsWith('bossesDefeatedByElementRun.')) {
+      final elementName = path.split('.')[1];
+      final element = Element.values.firstWhere(
+        (e) => e.toString().split('.').last == elementName,
+      );
+      return s.bossesDefeatedByElementRun[element] ?? 0;
+    }
+
+    if (path.startsWith('custom.hasTwoTier2.')) {
+      final elementName = path.split('.')[2];
+      final element = Element.values.firstWhere(
+        (e) => e.toString().split('.').last == elementName,
+      );
+
+      final count = game.teamManager.team.where(
+        (m) => m.tier == 2 && m.element == element,
+      ).length;
+
+      int level = game.currentLevel - 1;
+
+      return (count >= 2 && level >= 50) ? 1 : 0;
+    }
+
+    if (path.startsWith('custom.hasTier3.fireAndTenBosses')) {
+      final bosses = s.bossesDefeatedByElement[Element.fire] ?? 0;
+      final hasTier3 = game.teamManager.team.any((m) => m.tier == 3 && m.element == Element.fire);
+
+      return (bosses >= 10 && hasTier3) ? 1 : 0;
+    }
+
+
     switch (path) {
       case 'runsWon': return s.runsWon;
       case 'runsStarted': return s.runsStarted;
@@ -103,8 +139,6 @@ class AchievementManager {
     if (a.unlock != null) {
       _applyUnlock(a.unlock!, stats);
     }
-
-    // TODO: fire UI event (popup, sound)
   }
 
   void _applyUnlock(UnlockableAction action, Statistics stats) {
@@ -119,7 +153,17 @@ class AchievementManager {
     switch (rewardType) {
       case 'tier_unlock':
         print("Unlocked tier: $data");
+        _unlockTier(data);
         break;
     }
+  }
+
+  void _unlockTier(String path) {
+    Element element = Element.values.firstWhere(
+      (e) => e.toString().split('.').last == path.split('_')[0],
+    );
+    int tier = int.parse(path.split('_')[1]);
+
+    UnlockManager().unlockNextTier(element, unlockTier: tier);
   }
 }

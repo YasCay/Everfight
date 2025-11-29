@@ -97,6 +97,7 @@ class MainMenu extends Component with HasGameReference<RogueliteGame> {
               builder: (_) => AchievementsScreen(
                 achievements: AchievementManager().achievements,
                 stats: StatisticsManager().statistics,
+                isUnlockableScreen: false,
               ),
             ),
           )
@@ -106,7 +107,18 @@ class MainMenu extends Component with HasGameReference<RogueliteGame> {
       },
       {
         'label': 'Unlockables',
-        'action': () => game.router.pushReplacementNamed('unlockables'),
+        'action': () => {
+          Navigator.push(
+            game.buildContext!,
+            MaterialPageRoute(
+              builder: (_) => AchievementsScreen(
+                achievements: AchievementManager().achievements,
+                stats: StatisticsManager().statistics,
+                isUnlockableScreen: true,
+              ),
+            ),
+          )
+        },
         'color': ButtonColorType.pink,
         'icon': Icons.lock_open,
       },

@@ -5,6 +5,8 @@ import 'package:everfight/models/boss.dart';
 import 'package:everfight/models/monster.dart';
 import 'package:everfight/util/size_utils.dart';
 import 'package:everfight/widgets/boss_widget.dart';
+import 'package:everfight/widgets/damage_popup_component.dart';
+import 'package:everfight/widgets/level_text.dart';
 import 'package:everfight/widgets/monster_widget.dart';
 import 'package:everfight/widgets/pause_button.dart';
 import 'package:flame/components.dart';
@@ -34,6 +36,7 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
     super.onMount();
     
     addPauseButton();
+    addLevelText();
 
     game.teamManager.addListener(refreshTeamUI);
     
@@ -47,15 +50,29 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
   }
 
   void addPauseButton() {
+    var position = Vector2(
+      game.size.x - SizeUtils.scalePercentage(game.size.x, 15) - 20,
+      20,
+    );
+
     var pauseButton = PauseButton(
       onPressed: () {
         game.pauseEngine();
         game.showPauseMenu();
       },
+      position: position,
     );
     pauseButton.priority = 10;
 
     add(pauseButton);
+  }
+
+  void addLevelText() {
+    final component = LevelTextComponent(game)
+      ..position = Vector2(SizeUtils.scalePercentage(game.size.x, 5), 20)
+      ..priority = 10;
+
+    add(component);
   }
 
   Future<void> _initRun() async {
@@ -69,6 +86,7 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
 
     removeAll(children);
     addPauseButton();
+    addLevelText();
 
     isAnimating = false;
     turnQueue.clear();
@@ -95,6 +113,7 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
   Future<void> _restartRun() async {
     removeAll(children);
     addPauseButton();
+    addLevelText();
     _initRun();
   }
 
@@ -213,7 +232,14 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
       target: bossWidget,
       applyDamage: () {
         StatisticsManager().recordDamageDealt(monster.name, monster.baseAttack);
-        bossWidget.takeDamage(monster.baseAttack);
+        bossWidget.takeDamage(monster.baseAttack, (popupPosition) {
+          final damagePopup = DamagePopupComponent(
+            damage: monster.baseAttack,
+            position: popupPosition,
+          );
+          damagePopup.priority = priority + 1;
+          add(damagePopup);
+        });
       },
       onAttackFinished: () {
         isAnimating = false;
@@ -253,11 +279,19 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
       target: victimWidget,
       applyDamage: () {
         StatisticsManager().recordDamageTaken(boss.attack);
-        victimWidget.takeDamage(boss.attack);
+        victimWidget.takeDamage(boss.attack, (popupPosition) {
+          final damagePopup = DamagePopupComponent(
+            damage: boss.attack,
+            position: popupPosition,
+          );
+          damagePopup.priority = priority + 1;
+          add(damagePopup);
+        });
       },
       onAttackFinished: () {
         isAnimating = false;
         if (victim.health <= 0) {
+          victimWidget.defeated();
           StatisticsManager().recordMonsterDeath(victim.name);
           final aliveMonsters = game.teamManager.team.where((m) => m.health > 0).toList();
           if (aliveMonsters.isEmpty) {
@@ -289,6 +323,11 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
 
   void _onVictory() {
     StatisticsManager().recordBossDefeated(boss.element);
+
+    for (final widget in children.whereType<MonsterWidget>()) {
+      widget.heal();
+    }
+
     game.phaseController.victory(() {
       boss = game.bossManager.generateNextBoss(game.currentLevel + 1);
       _loadBackground();

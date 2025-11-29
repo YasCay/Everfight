@@ -74,19 +74,21 @@ class MonsterGenerator {
   }
 
   Monster createMonsterFromTemplate(MonsterTemplate tpl, int level) {
-    const double growthPerLevel = MONSTER_PER_LEVEL_GROWTH;
+    const double hpGrowthPerLevel = MONSTER_HP_PER_LEVEL_GROWTH;
+    const double atkGrowthPerLevel = MONSTER_ATK_PER_LEVEL_GROWTH;
     const double tierMultiplier = MONSTER_TIER_MULTIPLIER;
 
-    final double levelFactor = pow(growthPerLevel, level - 1).toDouble();
+    final double levelHpFactor = 1 + hpGrowthPerLevel * (level - 1);
+    final double levelAtkFactor = 1 + atkGrowthPerLevel * (level - 1);
 
-    final double tierFactor = 1 + (tpl.tier - 1) * tierMultiplier;
+    final double tierFactor = pow(tierMultiplier, tpl.tier - 1).toDouble();
 
     
     final int scaledHP =
-        (tpl.baseHealth * levelFactor * tierFactor * getRandomFactor()).round();
+        (tpl.baseHealth * levelHpFactor * tierFactor * getRandomFactor()).round();
 
     final int scaledATK =
-        (tpl.baseAttack * levelFactor * tierFactor * getRandomFactor()).round();
+        (tpl.baseAttack * levelAtkFactor * tierFactor * getRandomFactor()).round();
 
     return Monster(
       name: tpl.name,
@@ -94,6 +96,7 @@ class MonsterGenerator {
       baseHealth: scaledHP,
       baseAttack: scaledATK,
       imagePath: tpl.imagePath,
+      tier: tpl.tier,
     );
   }
 

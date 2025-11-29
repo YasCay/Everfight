@@ -1,9 +1,21 @@
 class GameAssets {
   static const monsters = [
     'fakemons/air/Stormgryph_front.png',
+    'fakemons/air/Galehawk_front.png',
+    'fakemons/air/HazeFairy_front.png',
+    'fakemons/air/Whirlstag_front.png',
     'fakemons/earth/Basaltor_front.png',
+    'fakemons/earth/Claywolf_front.png',
+    'fakemons/earth/Mudcrust_front.png',
+    'fakemons/earth/Thornolotl_front.png',
     'fakemons/fire/Ashblade_front.png',
+    'fakemons/fire/CoalGolem_front.png',
+    'fakemons/fire/Pyrosalamander_front.png',
+    'fakemons/fire/Sparkfinch_front.png',
     'fakemons/water/Tidepanzer_front.png',
+    'fakemons/water/MistRay_front.png',
+    'fakemons/water/Splashling_front.png',
+    'fakemons/water/Voltcarp_front.png',
   ];
 
   static const bosses = [

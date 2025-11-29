@@ -101,5 +101,8 @@ class LocalStorage {
   static Future<void> clear() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_gameStateKey);
+    await prefs.remove(_tierKey);
+    await prefs.remove(_statisticsKey);
+    await prefs.remove(_achievementsKey);
   }
 }
