@@ -6,6 +6,7 @@ class Statistics {
   int highestLevelReached = 0;
 
   Map<Element, int> bossesDefeatedByElement = {};
+  Map<Element, int> bossesDefeatedByElementRun = {};
   Map<String, int> monsterPicked = {};
   Map<String, int> winsWithMonster = {};
 
@@ -17,6 +18,14 @@ class Statistics {
 
   int get bossesDefeated {
     return bossesDefeatedByElement.values.fold(0, (a, b) => a + b);
+  }
+
+  int bossesDefeatedInRun(Element element) {
+    return bossesDefeatedByElementRun[element] ?? 0;
+  }
+
+  int bossesDefeatedTotal(Element element) {
+    return bossesDefeatedByElement[element] ?? 0;
   }
 
   num getStatValue(String stat) {
@@ -46,8 +55,11 @@ class Statistics {
       ..runsWon = json['runsWon'] ?? 0
       ..highestLevelReached = json['highestLevelReached'] ?? 0
       ..bossesDefeatedByElement = Map<Element, int>.from(
-          (json['bossesDefeatedByElement'] ?? {}).map((key, value) => MapEntry(
-              Element.values.firstWhere((e) => e.toString() == key), value)))
+          (json['bossesDefeatedByElement'] ?? {}).map((key, value) =>
+              MapEntry(Element.values.firstWhere((e) => e.toString() == key), value)))
+      ..bossesDefeatedByElementRun = Map<Element, int>.from(
+          (json['bossesDefeatedByElementRun'] ?? {}).map((key, value) =>
+              MapEntry(Element.values.firstWhere((e) => e.toString() == key), value)))
       ..monsterPicked = Map<String, int>.from(json['monsterPicked'] ?? {})
       ..winsWithMonster = Map<String, int>.from(json['winsWithMonster'] ?? {})
       ..totalDamageDealt = json['totalDamageDealt'] ?? 0
@@ -62,8 +74,10 @@ class Statistics {
       'runsStarted': runsStarted,
       'runsWon': runsWon,
       'highestLevelReached': highestLevelReached,
-      'bossesDefeatedByElement': bossesDefeatedByElement
-          .map((key, value) => MapEntry(key.toString(), value)),
+      'bossesDefeatedByElement': bossesDefeatedByElement.map((key, value) =>
+          MapEntry(key.toString(), value)),
+      'bossesDefeatedByElementRun': bossesDefeatedByElementRun.map((key, value) =>
+          MapEntry(key.toString(), value)),
       'monsterPicked': monsterPicked,
       'winsWithMonster': winsWithMonster,
       'totalDamageDealt': totalDamageDealt,
@@ -76,7 +90,8 @@ class Statistics {
   @override
   String toString() {
     return 'Statistics(runsStarted: $runsStarted, runsWon: $runsWon, highestLevelReached: $highestLevelReached, '
-        'bossesDefeatedByElement: $bossesDefeatedByElement, monsterPicked: $monsterPicked, winsWithMonster: $winsWithMonster, '
+        'bossesDefeatedByElement: $bossesDefeatedByElement, bossesDefeatedByElementRun: $bossesDefeatedByElementRun, '
+        'monsterPicked: $monsterPicked, winsWithMonster: $winsWithMonster, '
         'totalDamageDealt: $totalDamageDealt, totalDamageTaken: $totalDamageTaken, '
         'monsterDamageDealt: $monsterDamageDealt, monsterDeaths: $monsterDeaths)';
   }

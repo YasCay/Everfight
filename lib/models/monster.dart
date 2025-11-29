@@ -8,13 +8,9 @@ class Monster extends ChangeNotifier {
   int health;
   final int baseAttack;
   final Element element;
+  int tier;
 
-  Monster(
-      {required this.name,
-      required this.imagePath,
-      required this.baseHealth,
-      required this.baseAttack,
-      required this.element})
+  Monster({required this.name, required this.imagePath, required this.baseHealth, required this.baseAttack, required this.element, required this.tier})
       : health = baseHealth;
 
   factory Monster.fromJson(Map<String, dynamic> json) {
@@ -23,8 +19,8 @@ class Monster extends ChangeNotifier {
       imagePath: json['imagePath'],
       baseHealth: json['baseHealth'],
       baseAttack: json['baseAttack'],
-      element: Element.values
-          .firstWhere((e) => e.toString() == 'Element.${json['element']}'),
+      element: Element.values.firstWhere((e) => e.toString() == 'Element.${json['element']}'),
+      tier: json['tier'],
     );
   }
 
@@ -35,6 +31,7 @@ class Monster extends ChangeNotifier {
       'baseHealth': baseHealth,
       'baseAttack': baseAttack,
       'element': element.toString().split('.').last,
+      'tier': tier,
     };
   }
 

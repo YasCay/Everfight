@@ -40,18 +40,41 @@ class MonsterSelectionOverlay extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
-                  isFirstPick
-                      ? 'Choose your first Monster!'
-                      : teamManager.isFull
-                          ? 'Your team is full! Choose a monster to replace:'
-                          : 'Recruit a new Monster!',
-                  style: const TextStyle(
-                    fontSize: 26,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                  textAlign: TextAlign.center,
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      isFirstPick
+                          ? 'Choose your first Monster!'
+                          : teamManager.isFull
+                              ? 'Your team is full! Choose a monster to replace:'
+                              : 'Recruit a new Monster!',
+                      style: const TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    SizedBox(width: 10),
+                    TextButton(
+                      style: TextButton.styleFrom(
+                        foregroundColor: Colors.white70,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 4),
+                        backgroundColor: Colors.grey[800],
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      onPressed: () {
+                        game.teamManager.rerenderTeam();
+                        game.hideMonsterSelection();
+                      },
+                      child: const Text('Skip'),
+                    ),
+                  ],
                 ),
                 SizedBox(height: boxHeight),
                 Wrap(

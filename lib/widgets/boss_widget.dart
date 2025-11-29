@@ -1,7 +1,6 @@
 import 'dart:math' as math;
 
 import 'package:everfight/models/boss.dart';
-import 'package:everfight/widgets/damage_popup_component.dart';
 import 'package:everfight/widgets/health_bar_component.dart';
 import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
@@ -59,8 +58,8 @@ class BossWidget extends PositionComponent {
       owner: boss,
       getCurrent: () => boss.health,
       getMax: () => boss.baseHealth,
-      position: Vector2(8, height - 18),
-      size: Vector2(width * 0.5, 16),
+      position: Vector2(width * 0.1, height - 18),
+      size: Vector2(width * 0.8, 16),
     );
 
     add(spriteComponent);
@@ -79,7 +78,7 @@ class BossWidget extends PositionComponent {
     super.render(canvas);
   }
 
-  void takeDamage(int damage) {
+  void takeDamage(int damage, Function(Vector2) damagePopupCallback) {
     boss.takeDamage(damage);
 
     final spriteComponent = _spriteComponent;
@@ -93,12 +92,7 @@ class BossWidget extends PositionComponent {
 
     // Add damage popup at center of boss
     final popupPosition = Vector2(width / 2, height / 3);
-    final damagePopup = DamagePopupComponent(
-      damage: damage,
-      position: popupPosition,
-    );
-    damagePopup.priority = priority + 1;
-    add(damagePopup);
+    damagePopupCallback(position + popupPosition);
   }
 
   void attack({
@@ -113,7 +107,7 @@ class BossWidget extends PositionComponent {
 
     final reverseAttackEffect = MoveByEffect(
       -moveVector,
-      EffectController(duration: 0.3),
+      EffectController(duration: 0.25),
       onComplete: () {
         onAttackFinished();
       },
@@ -121,7 +115,7 @@ class BossWidget extends PositionComponent {
 
     final attackEffect = MoveByEffect(
       moveVector,
-      EffectController(duration: 0.3),
+      EffectController(duration: 0.25),
       onComplete: () {
         applyDamage();
         add(reverseAttackEffect);

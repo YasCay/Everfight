@@ -1,7 +1,6 @@
 import 'dart:math' as math;
 
 import 'package:everfight/models/monster.dart';
-import 'package:everfight/widgets/damage_popup_component.dart';
 import 'package:everfight/widgets/health_bar_component.dart';
 import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
@@ -16,6 +15,9 @@ class MonsterWidget extends PositionComponent {
   final double width;
   @override
   final double height;
+
+  ColorEffect? _defeatedColorEffect;
+  OpacityEffect? _defeatedOpacityEffect;
 
   MonsterWidget({
     required this.monster,
@@ -58,15 +60,15 @@ class MonsterWidget extends PositionComponent {
       owner: monster,
       getCurrent: () => monster.health,
       getMax: () => monster.baseHealth,
-      position: Vector2(8, height - 18),
-      size: Vector2(width * 0.55, 14),
+      position: Vector2(width * 0.1, height - 18),
+      size: Vector2(width * 0.8, 14),
     );
 
     add(spriteComponent);
     add(_hpBubble);
   }
 
-  void takeDamage(int damage) {
+  void takeDamage(int damage, Function(Vector2) damagePopupCallback) {
     monster.takeDamage(damage);
     final spriteComponent = _spriteComponent;
     if (spriteComponent != null) {
@@ -79,12 +81,7 @@ class MonsterWidget extends PositionComponent {
 
     // Add damage popup at center of monster
     final popupPosition = Vector2(width / 2, height / 3);
-    final damagePopup = DamagePopupComponent(
-      damage: damage,
-      position: popupPosition,
-    );
-    damagePopup.priority = priority + 1;
-    add(damagePopup);
+    damagePopupCallback(position + popupPosition);
   }
 
   void attack({
@@ -99,7 +96,7 @@ class MonsterWidget extends PositionComponent {
 
     final reverseAttackEffect = MoveByEffect(
       -moveVector,
-      EffectController(duration: 0.3),
+      EffectController(duration: 0.25),
       onComplete: () {
         onAttackFinished();
       },
@@ -107,7 +104,7 @@ class MonsterWidget extends PositionComponent {
 
     final attackEffect = MoveByEffect(
       moveVector,
-      EffectController(duration: 0.3),
+      EffectController(duration: 0.25),
       onComplete: () {
         applyDamage();
         add(reverseAttackEffect);
@@ -115,5 +112,67 @@ class MonsterWidget extends PositionComponent {
     );
 
     add(attackEffect);
+  }
+
+  void heal() {
+    final sprite = _spriteComponent;
+    if (sprite == null) return;
+
+    // Remove previous effects immediately
+    _defeatedColorEffect?.removeFromParent();
+    _defeatedOpacityEffect?.removeFromParent();
+
+    // Restore original color
+    final restoreColor = ColorEffect(
+      Colors.white,
+      EffectController(
+        duration: 0.4,
+        curve: Curves.easeOut,
+      ),
+      opacityTo: 0.0,
+    );
+
+    // Restore opacity
+    final restoreOpacity = OpacityEffect.to(
+      1.0,
+      EffectController(
+        duration: 0.4,
+        curve: Curves.easeOut,
+      ),
+    );
+
+    sprite.add(restoreColor);
+    sprite.add(restoreOpacity);
+  }
+
+  void defeated() {
+    final sprite = _spriteComponent;
+    if (sprite == null) return;
+
+    // Remove previous effects if any
+    _defeatedColorEffect?.removeFromParent();
+    _defeatedOpacityEffect?.removeFromParent();
+
+    // Fade color to gray
+    _defeatedColorEffect = ColorEffect(
+      Colors.grey.shade600,
+      EffectController(
+        duration: 0.4,
+        curve: Curves.easeOut,
+      ),
+      opacityTo: 0.8,
+    );
+
+    // Reduce opacity
+    _defeatedOpacityEffect = OpacityEffect.to(
+      0.4,
+      EffectController(
+        duration: 0.4,
+        curve: Curves.easeOut,
+      ),
+    );
+
+    sprite.add(_defeatedColorEffect!);
+    sprite.add(_defeatedOpacityEffect!);
   }
 }
