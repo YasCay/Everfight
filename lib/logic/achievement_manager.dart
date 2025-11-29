@@ -49,23 +49,35 @@ class AchievementManager {
     if (value == null) return false;
 
     switch (cond.operator) {
-      case '>=': return value >= cond.value;
-      case '>':  return value > cond.value;
-      case '==': return value == cond.value;
-      case '<=': return value <= cond.value;
-      case '<':  return value < cond.value;
-      default: return false;
+      case '>=':
+        return value >= cond.value;
+      case '>':
+        return value > cond.value;
+      case '==':
+        return value == cond.value;
+      case '<=':
+        return value <= cond.value;
+      case '<':
+        return value < cond.value;
+      default:
+        return false;
     }
   }
 
   dynamic _getStatValue(String path, Statistics s) {
     switch (path) {
-      case 'runsWon': return s.runsWon;
-      case 'runsStarted': return s.runsStarted;
-      case 'highestLevelReached': return s.highestLevelReached;
-      case 'totalDamageDealt': return s.totalDamageDealt;
-      case 'totalDamageTaken': return s.totalDamageTaken;
-      case 'bossesDefeated': return s.bossesDefeated;
+      case 'runsWon':
+        return s.runsWon;
+      case 'runsStarted':
+        return s.runsStarted;
+      case 'highestLevelReached':
+        return s.highestLevelReached;
+      case 'totalDamageDealt':
+        return s.totalDamageDealt;
+      case 'totalDamageTaken':
+        return s.totalDamageTaken;
+      case 'bossesDefeated':
+        return s.bossesDefeated;
     }
 
     if (path.startsWith('bossesDefeatedByElement.')) {

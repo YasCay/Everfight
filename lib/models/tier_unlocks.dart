@@ -2,7 +2,7 @@ import 'package:everfight/models/enums.dart';
 
 class TierUnlocks {
   final Map<Element, int> unlockedTiers;
-  
+
   TierUnlocks({required this.unlockedTiers});
 
   int getUnlockedTier(Element element) {
@@ -12,7 +12,8 @@ class TierUnlocks {
   factory TierUnlocks.fromJson(Map<String, dynamic> json) {
     final Map<Element, int> tiers = {};
     json.forEach((key, value) {
-      final element = Element.values.firstWhere((e) => e.toString() == 'Element.$key');
+      final element =
+          Element.values.firstWhere((e) => e.toString() == 'Element.$key');
       tiers[element] = value;
     });
     return TierUnlocks(unlockedTiers: tiers);

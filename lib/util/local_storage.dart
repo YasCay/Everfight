@@ -45,7 +45,7 @@ class LocalStorage {
   /// Load unlocked tiers
   static Future<TierUnlocks> loadUnlockedTiers() async {
     final prefs = await SharedPreferences.getInstance();
-    final jsonString = prefs.getString(_tierKey); 
+    final jsonString = prefs.getString(_tierKey);
     if (jsonString != null) {
       try {
         final jsonData = jsonDecode(jsonString);

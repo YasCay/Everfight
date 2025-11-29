@@ -23,7 +23,8 @@ class Boss extends ChangeNotifier {
       imagePath: json['imagePath'],
       baseHealth: json['baseHealth'],
       attack: json['attack'],
-      element: Element.values.firstWhere((e) => e.toString() == 'Element.${json['element']}'),
+      element: Element.values
+          .firstWhere((e) => e.toString() == 'Element.${json['element']}'),
     );
   }
 
@@ -62,6 +63,6 @@ extension BossBackground on Boss {
         return 'fightscene/earth/earth_scene.png';
       case Element.air:
         return 'fightscene/air/air_scene.png';
-      }
+    }
   }
 }

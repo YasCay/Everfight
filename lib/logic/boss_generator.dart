@@ -4,7 +4,6 @@ import 'package:everfight/models/boss.dart';
 import 'package:everfight/models/boss_template.dart';
 
 class BossGenerator {
-
   final Random _rng = Random();
   final List<BossTemplate> templates;
 

@@ -22,7 +22,10 @@ class MonsterWidget extends PositionComponent {
     required Vector2 position,
     required this.width,
     required this.height,
-  }) : super(position: position, size: Vector2(width, height), anchor: Anchor.topLeft);
+  }) : super(
+            position: position,
+            size: Vector2(width, height),
+            anchor: Anchor.topLeft);
 
   @override
   Future<void> onLoad() async {
@@ -90,7 +93,8 @@ class MonsterWidget extends PositionComponent {
     required VoidCallback onAttackFinished,
   }) {
     final attackerCenter = position + Vector2(width / 2, height / 2);
-    final targetCenter = target.position + Vector2(target.size.x / 2, target.size.y / 2);
+    final targetCenter =
+        target.position + Vector2(target.size.x / 2, target.size.y / 2);
     final moveVector = (targetCenter - attackerCenter) * 0.5;
 
     final reverseAttackEffect = MoveByEffect(

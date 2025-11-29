@@ -44,7 +44,7 @@ class RogueliteGame extends FlameGame with HasKeyboardHandlerComponents {
     await Flame.images.loadAll(GameAssets.all);
     await MonsterRepository().load();
     await BossRepository().load();
-    
+
     router = RouterComponent(
       initialRoute: 'menu',
       routes: {
@@ -57,7 +57,7 @@ class RogueliteGame extends FlameGame with HasKeyboardHandlerComponents {
     teamManager = TeamManager();
     bossManager = BossManager();
     phaseController = GamePhaseController(this);
-    
+
     GameState gameState = await LocalStorage.loadState();
     print('Loaded game state: $gameState');
     teamManager.loadState(gameState);

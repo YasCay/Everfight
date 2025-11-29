@@ -16,12 +16,13 @@ class MonsterSelectionOverlay extends StatelessWidget {
     final padding = EdgeInsets.all(SizeUtils.scalePercentage(game.size.x, 2.5));
     final boxHeight = SizeUtils.scalePercentage(game.size.y, 2.5);
     final boxSpacing = SizeUtils.scalePercentage(game.size.x, 1.85);
-    
+
     final width = SizeUtils.scalePercentage(game.size.x, 100);
     final height = SizeUtils.scalePercentage(game.size.y, 100);
 
     // Generate 3 candidates
-    final candidates = teamManager.getRecruitmentCandidates(level: game.currentLevel);
+    final candidates =
+        teamManager.getRecruitmentCandidates(level: game.currentLevel);
 
     return Material(
       color: Colors.transparent,
@@ -57,30 +58,34 @@ class MonsterSelectionOverlay extends StatelessWidget {
                   spacing: boxSpacing,
                   runSpacing: boxSpacing,
                   alignment: WrapAlignment.center,
-                  children: candidates.map((m) => CandidateCard(
-                    monster: m,
-                    onTap: () {
-                        if (!teamManager.isFull) {
-                          // Add normally if there's space
-                          teamManager.addOrExchange(m);
-                          game.hideMonsterSelection();
-                        } else {
-                          // Open exchange dialog
-                          Navigator.of(context).push(
-                            PageRouteBuilder(
-                              opaque: false,
-                              barrierColor: Colors.black.withValues(alpha: 0.8),
-                              pageBuilder: (_, __, ___) => MonsterExchangeOverlay(
-                                game: game,
-                                newMonster: m,
-                              ),
-                            ),
-                          );
-                        }
-                      },
-                    width: SizeUtils.scalePercentage(game.size.x, 25),
-                    height: SizeUtils.scalePercentage(game.size.y, 55),
-                  )).toList(),
+                  children: candidates
+                      .map((m) => CandidateCard(
+                            monster: m,
+                            onTap: () {
+                              if (!teamManager.isFull) {
+                                // Add normally if there's space
+                                teamManager.addOrExchange(m);
+                                game.hideMonsterSelection();
+                              } else {
+                                // Open exchange dialog
+                                Navigator.of(context).push(
+                                  PageRouteBuilder(
+                                    opaque: false,
+                                    barrierColor:
+                                        Colors.black.withValues(alpha: 0.8),
+                                    pageBuilder: (_, __, ___) =>
+                                        MonsterExchangeOverlay(
+                                      game: game,
+                                      newMonster: m,
+                                    ),
+                                  ),
+                                );
+                              }
+                            },
+                            width: SizeUtils.scalePercentage(game.size.x, 25),
+                            height: SizeUtils.scalePercentage(game.size.y, 55),
+                          ))
+                      .toList(),
                 ),
               ],
             ),

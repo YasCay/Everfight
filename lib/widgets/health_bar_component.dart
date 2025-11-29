@@ -21,7 +21,10 @@ class HealthBarComponent extends PositionComponent {
     Vector2? size,
     this.borderRadius = 4.0,
     this.textPaint,
-  }) : super(position: position ?? Vector2.zero(), size: size ?? Vector2(80, 12), anchor: Anchor.topLeft);
+  }) : super(
+            position: position ?? Vector2.zero(),
+            size: size ?? Vector2(80, 12),
+            anchor: Anchor.topLeft);
 
   late final TextPaint _internalTextPaint;
 
@@ -35,7 +38,9 @@ class HealthBarComponent extends PositionComponent {
             fontSize: 10,
             color: Colors.white,
             fontWeight: FontWeight.bold,
-            shadows: [Shadow(offset: Offset(1, 1), blurRadius: 2, color: Colors.black)],
+            shadows: [
+              Shadow(offset: Offset(1, 1), blurRadius: 2, color: Colors.black)
+            ],
           ),
         );
   }
@@ -59,7 +64,8 @@ class HealthBarComponent extends PositionComponent {
     final double pct = max <= 0 ? 0 : (current / max).clamp(0.0, 1.0);
 
     final Rect outer = Rect.fromLTWH(0, 0, size.x, size.y);
-    final RRect outerR = RRect.fromRectAndRadius(outer, Radius.circular(borderRadius));
+    final RRect outerR =
+        RRect.fromRectAndRadius(outer, Radius.circular(borderRadius));
 
     // background
     final Paint bgPaint = Paint()..color = Colors.black.withValues(alpha: 0.6);
@@ -70,15 +76,20 @@ class HealthBarComponent extends PositionComponent {
     // color gradient from red (low) to green (full)
     final Color fillColor = Color.lerp(Colors.red, Colors.green, pct)!;
     final Paint fillPaint = Paint()..color = fillColor;
-    final RRect filledR = RRect.fromRectAndRadius(filled, Radius.circular(borderRadius));
+    final RRect filledR =
+        RRect.fromRectAndRadius(filled, Radius.circular(borderRadius));
     canvas.drawRRect(filledR, fillPaint);
 
     // border
-    final Paint borderPaint = Paint()..style = PaintingStyle.stroke..color = Colors.white.withValues(alpha: 0.6)..strokeWidth = 1;
+    final Paint borderPaint = Paint()
+      ..style = PaintingStyle.stroke
+      ..color = Colors.white.withValues(alpha: 0.6)
+      ..strokeWidth = 1;
     canvas.drawRRect(outerR, borderPaint);
 
     // text (current / max or percentage)
     final text = '${getCurrent()} / ${getMax()}';
-    _internalTextPaint.render(canvas, text, Vector2(size.x / 2, size.y / 2), anchor: Anchor.center);
+    _internalTextPaint.render(canvas, text, Vector2(size.x / 2, size.y / 2),
+        anchor: Anchor.center);
   }
 }

@@ -8,7 +8,6 @@ class MonsterTemplate {
   final int baseAttack;
   final String imagePath;
 
-
   MonsterTemplate({
     required this.name,
     required this.element,
@@ -18,13 +17,14 @@ class MonsterTemplate {
     required this.imagePath,
   });
 
-
-  factory MonsterTemplate.fromJson(Map<String, dynamic> json) => MonsterTemplate(
-    name: json['name'],
-    element: Element.values.firstWhere((e) => e.toString() == 'Element.${json['element']}'),
-    tier: json['tier'],
-    baseHealth: json['baseHp'],
-    baseAttack: json['baseDamage'],
-    imagePath: json['imagePath'],
-  );
+  factory MonsterTemplate.fromJson(Map<String, dynamic> json) =>
+      MonsterTemplate(
+        name: json['name'],
+        element: Element.values
+            .firstWhere((e) => e.toString() == 'Element.${json['element']}'),
+        tier: json['tier'],
+        baseHealth: json['baseHp'],
+        baseAttack: json['baseDamage'],
+        imagePath: json['imagePath'],
+      );
 }

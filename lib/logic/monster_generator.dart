@@ -53,7 +53,8 @@ class MonsterGenerator {
 
     // Avoid impossible cases
     if (pool.length < count) {
-      throw Exception("Not enough unique monsters available to generate $count monsters.");
+      throw Exception(
+          "Not enough unique monsters available to generate $count monsters.");
     }
 
     final used = <String>{}; // "fire-1", "water-3", ...
@@ -81,7 +82,6 @@ class MonsterGenerator {
 
     final double tierFactor = 1 + (tpl.tier - 1) * tierMultiplier;
 
-    
     final int scaledHP =
         (tpl.baseHealth * levelFactor * tierFactor * getRandomFactor()).round();
 
@@ -108,5 +108,6 @@ class _ElementTierEntry {
   final int tier;
   final double weight;
 
-  _ElementTierEntry({required this.element, required this.tier, required this.weight});
+  _ElementTierEntry(
+      {required this.element, required this.tier, required this.weight});
 }

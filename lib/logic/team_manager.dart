@@ -96,11 +96,13 @@ class TeamManager extends ChangeNotifier {
   bool addOrExchange(Monster candidate, {int? exchangeIndex}) {
     if (!isFull) {
       return add(candidate);
-    } else if (exchangeIndex != null && exchangeIndex >= 0 && exchangeIndex < _team.length) {
+    } else if (exchangeIndex != null &&
+        exchangeIndex >= 0 &&
+        exchangeIndex < _team.length) {
       replace(exchangeIndex, candidate);
       return true;
     }
-    
+
     return false; // Team full and no valid exchange index provided
   }
 

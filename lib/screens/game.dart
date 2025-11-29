@@ -70,7 +70,8 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
     var countMonsterWidgets = children.whereType<MonsterWidget>().length;
     if (countMonsterWidgets > 0) {
       if (debugMode) {
-        print('GameScene already initialized with $countMonsterWidgets monster widgets, skipping _initRun.');
+        print(
+            'GameScene already initialized with $countMonsterWidgets monster widgets, skipping _initRun.');
       }
       return;
     }
@@ -83,7 +84,8 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
     currentTurnIndex = 0;
 
     if (game.currentLevel != 1 || game.teamManager.team.isNotEmpty) {
-      boss = game.bossManager.currentBoss ?? game.bossManager.generateNextBoss(game.currentLevel);
+      boss = game.bossManager.currentBoss ??
+          game.bossManager.generateNextBoss(game.currentLevel);
       await _loadBackground();
       _renderTeam();
       _renderBoss();
@@ -116,7 +118,8 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
   void _updateLevelText() {
     try {
       levelText.text = 'Level ${game.currentLevel}';
-      levelText.textRenderer = _textPaintForLevel(game.currentLevel, levelFontSize);
+      levelText.textRenderer =
+          _textPaintForLevel(game.currentLevel, levelFontSize);
     } catch (e) {
       if (debugMode) {
         print('Could not update level text: $e');
@@ -146,9 +149,11 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
       final layerBase = 0.3 * (1 - t) + 0.06;
       final opacity = (layerBase * (0.6 + progress * 0.8)).clamp(0.02, 0.95);
 
-      final layerColor = Color.lerp(mainGlow, startColor, (1 - t) * 0.25)!.withOpacity(opacity);
+      final layerColor = Color.lerp(mainGlow, startColor, (1 - t) * 0.25)!
+          .withValues(alpha: opacity);
 
-      shadows.add(Shadow(color: layerColor, blurRadius: blur, offset: Offset(0, 0)));
+      shadows.add(
+          Shadow(color: layerColor, blurRadius: blur, offset: Offset(0, 0)));
     }
 
     final textStyle = TextStyle(
@@ -197,7 +202,8 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
       game.size.x / 2 - bossWidth / 2,
       20,
     );
-    add(BossWidget(boss: boss, position: pos, width: bossWidth, height: bossHeight));
+    add(BossWidget(
+        boss: boss, position: pos, width: bossWidth, height: bossHeight));
   }
 
   @override
@@ -230,7 +236,8 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
 
   void _startTurnOrder() {
     game.phaseController.startCombat();
-    final aliveTeam = game.teamManager.team.where((m) => m.health > 0).toList()..shuffle();
+    final aliveTeam = game.teamManager.team.where((m) => m.health > 0).toList()
+      ..shuffle();
 
     turnQueue = [...aliveTeam, boss];
     currentTurnIndex = 0;
@@ -270,7 +277,8 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
     final bossWidget = _findBossWidget();
     if (monsterWidget == null || bossWidget == null) {
       if (debugMode) {
-        print('Skipping player attack – missing widgets (monster: ${monsterWidget != null}, boss: ${bossWidget != null})');
+        print(
+            'Skipping player attack – missing widgets (monster: ${monsterWidget != null}, boss: ${bossWidget != null})');
       }
       _advanceTurn();
       return;
@@ -312,7 +320,8 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
     if (victimWidget == null || bossWidget == null) {
       isAnimating = false;
       if (debugMode) {
-        print('Skipping boss attack – missing widgets (monster: ${victimWidget != null}, boss: ${bossWidget != null})');
+        print(
+            'Skipping boss attack – missing widgets (monster: ${victimWidget != null}, boss: ${bossWidget != null})');
       }
       _advanceTurn();
       return;
@@ -328,7 +337,8 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
         isAnimating = false;
         if (victim.health <= 0) {
           StatisticsManager().recordMonsterDeath(victim.name);
-          final aliveMonsters = game.teamManager.team.where((m) => m.health > 0).toList();
+          final aliveMonsters =
+              game.teamManager.team.where((m) => m.health > 0).toList();
           if (aliveMonsters.isEmpty) {
             _onDefeat();
             return;

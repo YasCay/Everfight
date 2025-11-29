@@ -58,4 +58,3 @@ class UnlockManager {
     return tierUnlocks.unlockedTiers[element] ?? 1;
   }
 }
-
