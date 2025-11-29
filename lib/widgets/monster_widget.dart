@@ -60,8 +60,8 @@ class MonsterWidget extends PositionComponent {
       owner: monster,
       getCurrent: () => monster.health,
       getMax: () => monster.baseHealth,
-      position: Vector2(8, height - 18),
-      size: Vector2(width * 0.55, 14),
+      position: Vector2(width * 0.1, height - 18),
+      size: Vector2(width * 0.8, 14),
     );
 
     add(spriteComponent);

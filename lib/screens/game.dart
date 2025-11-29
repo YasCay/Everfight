@@ -6,7 +6,6 @@ import 'package:everfight/models/monster.dart';
 import 'package:everfight/util/size_utils.dart';
 import 'package:everfight/widgets/boss_widget.dart';
 import 'package:everfight/widgets/damage_popup_component.dart';
-import 'package:everfight/widgets/level_text.dart';
 import 'package:everfight/widgets/monster_widget.dart';
 import 'package:everfight/widgets/pause_button.dart';
 import 'package:flame/components.dart';
@@ -19,9 +18,9 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
   late Boss boss;
   double timer = 0;
   bool isAnimating = false;
-
   late TextComponent levelText;
-  double levelFontSize = 18.0;
+  late PauseButton pauseButton;
+  final double levelFontSize = 24.0;
 
   List<dynamic> turnQueue = [];
   int currentTurnIndex = 0;
@@ -39,16 +38,13 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
   @override
   Future<void> onMount() async {
     super.onMount();
-
+    
     addPauseButton();
-    addLevelText();
+    _createLevelText();
 
     game.teamManager.addListener(refreshTeamUI);
 
     await _initRun();
-
-    // Create and show the level indicator after the scene has been initialized
-    _createLevelText();
   }
 
   @override
@@ -63,7 +59,7 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
       20,
     );
 
-    var pauseButton = PauseButton(
+    pauseButton = PauseButton(
       onPressed: () {
         game.pauseEngine();
         game.showPauseMenu();
@@ -73,14 +69,6 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
     pauseButton.priority = 10;
 
     add(pauseButton);
-  }
-
-  void addLevelText() {
-    final component = LevelTextComponent(game)
-      ..position = Vector2(SizeUtils.scalePercentage(game.size.x, 5), 20)
-      ..priority = 10;
-
-    add(component);
   }
 
   Future<void> _initRun() async {
@@ -95,7 +83,7 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
 
     removeAll(children);
     addPauseButton();
-    addLevelText();
+    _createLevelText();
 
     isAnimating = false;
     turnQueue.clear();
@@ -122,12 +110,17 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
 
   void _createLevelText() {
     final fontSize = levelFontSize;
+    final position = Vector2(
+      SizeUtils.scalePercentage(game.size.x, 15),
+      20,
+    );
+
     levelText = TextComponent(
       text: 'Level ${game.currentLevel}',
       textRenderer: _textPaintForLevel(game.currentLevel, fontSize),
       anchor: Anchor.topRight,
     )
-      ..position = Vector2(game.size.x - 8, 8)
+      ..position = position
       ..priority = 100;
 
     add(levelText);
@@ -187,7 +180,7 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
   Future<void> _restartRun() async {
     removeAll(children);
     addPauseButton();
-    addLevelText();
+    _createLevelText();
     _initRun();
   }
 

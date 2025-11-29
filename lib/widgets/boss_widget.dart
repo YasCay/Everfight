@@ -58,8 +58,8 @@ class BossWidget extends PositionComponent {
       owner: boss,
       getCurrent: () => boss.health,
       getMax: () => boss.baseHealth,
-      position: Vector2(8, height - 18),
-      size: Vector2(width * 0.5, 16),
+      position: Vector2(width * 0.1, height - 18),
+      size: Vector2(width * 0.8, 16),
     );
 
     add(spriteComponent);

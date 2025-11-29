@@ -44,7 +44,11 @@ class AchievementsScreen extends StatelessWidget {
         itemCount: sorted.length,
         itemBuilder: (context, i) {
           final a = sorted[i];
-          final p = _progress(a);
+          var p = _progress(a);
+
+          if (a.unlocked) {
+            p = 1.0;
+          }
 
           return Card(
             margin: const EdgeInsets.all(12),
