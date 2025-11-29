@@ -1,5 +1,4 @@
 import 'package:flame/components.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart' hide Image;
 
 /// A simple health bar component for Flame `PositionComponent`s.
@@ -63,7 +62,7 @@ class HealthBarComponent extends PositionComponent {
     final RRect outerR = RRect.fromRectAndRadius(outer, Radius.circular(borderRadius));
 
     // background
-    final Paint bgPaint = Paint()..color = Colors.black.withOpacity(0.6);
+    final Paint bgPaint = Paint()..color = Colors.black.withValues(alpha: 0.6);
     canvas.drawRRect(outerR, bgPaint);
 
     // filled part
@@ -75,7 +74,7 @@ class HealthBarComponent extends PositionComponent {
     canvas.drawRRect(filledR, fillPaint);
 
     // border
-    final Paint borderPaint = Paint()..style = PaintingStyle.stroke..color = Colors.white.withOpacity(0.6)..strokeWidth = 1;
+    final Paint borderPaint = Paint()..style = PaintingStyle.stroke..color = Colors.white.withValues(alpha: 0.6)..strokeWidth = 1;
     canvas.drawRRect(outerR, borderPaint);
 
     // text (current / max or percentage)

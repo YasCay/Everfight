@@ -1,5 +1,7 @@
 import 'package:everfight/logic/game_class.dart';
 import 'package:everfight/overlays/monster_selection.dart';
+import 'package:everfight/overlays/pause_menu.dart';
+import 'package:everfight/overlays/win_lose_overlay.dart';
 import 'package:flame/game.dart';
 import 'package:flame/flame.dart';
 import 'package:flutter/material.dart' hide Route, Element;
@@ -24,9 +26,14 @@ void main() async {
         game: RogueliteGame(),
         overlayBuilderMap: {
           'MonsterSelectionOverlay': (context, game) => MonsterSelectionOverlay(game: game as RogueliteGame),
+          'PauseMenu': (context, game) => PauseMenuOverlay(game: game as RogueliteGame),
+          'winLoseOverlay': (context, game) => WinLoseOverlay(
+            title: (game as RogueliteGame).currentOverlayTitle,
+            buttonText: game.currentOverlayButtonText,
+            onPressed: game.currentOverlayCallback!,
+          ),
         },
       ),
     ),
   );
 }
-

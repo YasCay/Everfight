@@ -1,6 +1,7 @@
-import 'dart:math';
-
-import 'package:everfight/models/enums.dart';
+import 'package:everfight/logic/monster_generator.dart';
+import 'package:everfight/logic/monster_repository.dart';
+import 'package:everfight/logic/statistics_manager.dart';
+import 'package:everfight/models/game_state.dart';
 import 'package:everfight/models/monster.dart';
 import 'package:everfight/util/monster_layout.dart';
 import 'package:everfight/util/settings.dart';
@@ -9,13 +10,13 @@ import 'package:flame/game.dart';
 import 'package:flutter/material.dart' hide Element;
 
 class TeamManager extends ChangeNotifier {
-  final Random _random = Random();
   final List<Monster> _team = [];
 
   List<Monster> get team => List.unmodifiable(_team);
 
   bool add(Monster m) {
     if (_team.length >= MAX_TEAM_SIZE) return false;
+    StatisticsManager().recordMonsterPicked(m.name);
     _team.add(m);
     notifyListeners();
     return true;
@@ -26,6 +27,7 @@ class TeamManager extends ChangeNotifier {
       print("Replacing monster at index $index with ${newMonster.name}");
     }
     if (index < 0 || index >= _team.length) return false;
+    StatisticsManager().recordMonsterPicked(newMonster.name);
     _team[index] = newMonster;
     notifyListeners();
     return true;
@@ -82,24 +84,11 @@ class TeamManager extends ChangeNotifier {
   }
 
   List<Monster> getRecruitmentCandidates({int level = 1, int count = 3}) {
-    final allCandidates = [
-      Monster(name: 'Basaltor', baseHealth: 90, baseAttack: 10, element: Element.earth, imagePath: 'fakemons/earth/Basaltor_front.png'),
-      Monster(name: 'Tidepanzer', baseHealth: 80, baseAttack: 18, element: Element.water, imagePath: 'fakemons/water/Tidepanzer_front.png'),
-      Monster(name: 'Ashblade', baseHealth: 70, baseAttack: 20, element: Element.fire, imagePath: 'fakemons/fire/Ashblade_front.png'),
-      Monster(name: 'Stormgryph', baseHealth: 70, baseAttack: 20, element: Element.air, imagePath: 'fakemons/air/Stormgryph_front.png'),
-    ];
+    var templates = MonsterRepository().templateMap;
 
-    allCandidates.shuffle(_random);
+    var monsterGenerator = MonsterGenerator(templates: templates);
 
-    // Pick first `count` monsters and scale their stats by player level
-    final selected = allCandidates.take(count).map((m) {
-      var baseHealth = (m.baseHealth * (1 + 0.1 * (level - 1))).toInt();
-      var baseAttack = (m.baseAttack * (1 + 0.1 * (level - 1))).toInt();
-      final scaled = Monster(name: m.name, imagePath: m.imagePath, baseHealth: baseHealth, baseAttack: baseAttack, element: m.element);
-      return scaled;
-    }).toList();
-
-    return selected;
+    return monsterGenerator.generateMonsters(level, count);
   }
 
   bool get isFull => _team.length >= MAX_TEAM_SIZE;
@@ -117,6 +106,20 @@ class TeamManager extends ChangeNotifier {
 
   // Notify listeners to rerender team UI (buggy on skip action)
   void rerenderTeam() {
+    notifyListeners();
+  }
+
+  void loadState(GameState state) {
+    _team.clear();
+    for (var m in state.team) {
+      _team.add(Monster(
+        name: m.name,
+        baseHealth: m.baseHealth,
+        baseAttack: m.baseAttack,
+        element: m.element,
+        imagePath: m.imagePath,
+      ));
+    }
     notifyListeners();
   }
 }

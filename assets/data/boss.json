@@ -1,0 +1,30 @@
+[
+  {
+    "name": "Infernakor",
+    "baseHealth": 120,
+    "baseAttack": 5,
+    "element": "fire",
+    "imagePath": "boss/fire/Infernakor_front.png"
+  },
+  {
+    "name": "Tidalion",
+    "baseHealth": 160,
+    "baseAttack": 3,
+    "element": "water",
+    "imagePath": "boss/water/Tidalion_front.png"
+  },
+  {
+    "name": "Terragron",
+    "baseHealth": 200,
+    "baseAttack": 4,
+    "element": "earth",
+    "imagePath": "boss/earth/Terragron_front.png"
+  },
+  {
+    "name": "Zephyra",
+    "baseHealth": 140,
+    "baseAttack": 6,
+    "element": "air",
+    "imagePath": "boss/air/Zephyra_front.png"
+  }
+]

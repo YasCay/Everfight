@@ -1,4 +1,7 @@
+import 'package:everfight/logic/achievement_manager.dart';
 import 'package:everfight/logic/game_class.dart';
+import 'package:everfight/logic/statistics_manager.dart';
+import 'package:everfight/screens/achievements.dart';
 import 'package:everfight/util/size_utils.dart';
 import 'package:everfight/widgets/rectangle_button.dart';
 import 'package:flame/components.dart';
@@ -87,7 +90,17 @@ class MainMenu extends Component with HasGameReference<RogueliteGame> {
       },
       {
         'label': 'Achievements',
-        'action': () => game.router.pushReplacementNamed('achievements'),
+        'action': () => {
+          Navigator.push(
+            game.buildContext!,
+            MaterialPageRoute(
+              builder: (_) => AchievementsScreen(
+                achievements: AchievementManager().achievements,
+                stats: StatisticsManager().statistics,
+              ),
+            ),
+          )
+        },
         'color': ButtonColorType.orange,
         'icon': Icons.star,
       },

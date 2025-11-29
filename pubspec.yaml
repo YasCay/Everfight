@@ -13,6 +13,7 @@ dependencies:
 
   cupertino_icons: ^1.0.8
   flame: ^1.30.1
+  shared_preferences: ^2.5.3
 
 dev_dependencies:
   flutter_test:
@@ -29,17 +30,21 @@ flutter:
     - assets/images/fakemons/water/
     - assets/images/fakemons/fire/
     - assets/images/fakemons/air/
+    - assets/data/monster.json
     # Bosses
     - assets/images/boss/earth/
     - assets/images/boss/water/
     - assets/images/boss/fire/
     - assets/images/boss/air/
+    - assets/data/boss.json
     # Backgrounds
     - assets/images/fightscene/air/
     - assets/images/fightscene/earth/
     - assets/images/fightscene/fire/
     - assets/images/fightscene/water/
     - assets/images/general/splash_bg.png
+    # Other assets
+    - assets/data/achievements.json
 
 # Flutter Native Splash configuration
 flutter_native_splash:

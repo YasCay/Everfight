@@ -1,43 +1,75 @@
-import 'package:everfight/logic/game_class.dart';
-import 'package:everfight/widgets/rectangle_button.dart';
-import 'package:flame/components.dart';
+import 'package:everfight/models/achievement.dart';
+import 'package:everfight/models/statistics.dart';
 import 'package:flutter/material.dart';
 
-class AchievementsScene extends Component with HasGameReference<RogueliteGame> {
-  late TextPaint _paint;
+class AchievementsScreen extends StatelessWidget {
+  final List<Achievement> achievements;
+  final Statistics stats;
+
+  const AchievementsScreen({
+    super.key,
+    required this.achievements,
+    required this.stats,
+  });
+
+  double _progress(Achievement a) {
+    final current = stats.getStatValue(a.condition.stat);
+    final target = a.condition.value;
+
+    if (current >= target) return 1.0;
+    return current / target;
+  }
 
   @override
-  Future<void> onLoad() async {
-    _paint = TextPaint(
-      style: const TextStyle(fontSize: 28, color: Colors.white),
+  Widget build(BuildContext context) {
+    final sorted = [...achievements]
+      ..sort((a, b) => _progress(b).compareTo(_progress(a)));
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Achievements"),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
+      body: ListView.builder(
+        itemCount: sorted.length,
+        itemBuilder: (context, i) {
+          final a = sorted[i];
+          final p = _progress(a);
+
+          return Card(
+            margin: const EdgeInsets.all(12),
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(a.title, style: const TextStyle(fontSize: 18)),
+                      if (a.unlocked)
+                        const Icon(Icons.check_circle, color: Colors.green),
+                    ],
+                  ),
+                  const SizedBox(height: 6),
+                  Text(a.description),
+                  const SizedBox(height: 10),
+                  LinearProgressIndicator(
+                    value: p,
+                    minHeight: 12,
+                    backgroundColor: Colors.grey.shade300,
+                  ),
+                  const SizedBox(height: 6),
+                  Text("${(p * 100).toStringAsFixed(0)}%"),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
     );
-
-    add(TextComponent(
-      text: 'Achievements',
-      textRenderer: _paint,
-      anchor: Anchor.center,
-      position: Vector2(game.size.x / 2, 100),
-    ));
-
-    final achievements = [
-      'First Victory',
-      '1000 Bosses Defeated',
-      'Victory with only Flame Build',
-    ];
-
-    for (int i = 0; i < achievements.length; i++) {
-      add(TextComponent(
-        text: '- ${achievements[i]}',
-        textRenderer: _paint,
-        position: Vector2(80, 180 + i * 40),
-      ));
-    }
-
-    add(RectangleButton(
-      label: 'Back',
-      position: Vector2(game.size.x / 2 - 120, game.size.y - 100),
-      size: Vector2(240, 50),
-      onPressed: () => game.router.pushNamed('menu'),
-    ));
   }
 }

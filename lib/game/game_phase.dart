@@ -5,5 +5,6 @@ enum GamePhase {
   selecting,
   victory,
   defeat,
+  restarting,
   // reward,
 }

@@ -1,5 +1,6 @@
 import 'package:everfight/game/game_phase.dart';
 import 'package:everfight/logic/game_class.dart';
+import 'package:everfight/logic/statistics_manager.dart';
 import 'package:everfight/util/settings.dart';
 
 class GamePhaseController {
@@ -10,6 +11,7 @@ class GamePhaseController {
   GamePhaseController(this.game);
 
   void startNewRun() {
+    StatisticsManager().recordRunStarted();
     game.teamManager.clear();
     game.bossManager.reset();
     game.currentLevel = 1;
@@ -30,15 +32,29 @@ class GamePhaseController {
   }
 
   void victory(void Function() nextBossCallback) {
+    StatisticsManager().recordHighestLevel(game.currentLevel);
     phase = GamePhase.victory;
     game.currentLevel++;
 
     game.healTeam();
 
-    if (game.currentLevel >= MAX_BOSS_COUNT) {
-      game.router.pushReplacementNamed('menu');
-      phase = GamePhase.init;
+    if (game.currentLevel > MAX_BOSS_COUNT) {
+      game.pauseEngine();
+      StatisticsManager().recordRunWon();
+      for (var monster in game.teamManager.team) {
+        StatisticsManager().recordWinWithMonster(monster.name);
+      }
+      game.showWinOverlay(() {
+        reset();
+        game.saveGame();
+        game.router.pushReplacementNamed('menu');
+        game.overlays.remove('winLoseOverlay');
+        game.resumeEngine();
+      });
     } else {
+      game.currentLevel--;
+      game.saveGame();
+      game.currentLevel++;
       // Show reward overlay and set next boss
       nextBossCallback();
       phase = GamePhase.selecting;
@@ -47,12 +63,29 @@ class GamePhaseController {
   }
 
   void defeat() {
+    game.pauseEngine();
+    StatisticsManager().recordHighestLevel(game.currentLevel);
     phase = GamePhase.defeat;
+    game.showLoseOverlay(() {
+      reset();
+      game.saveGame();
+      game.router.pushReplacementNamed('menu');
+      game.overlays.remove('winLoseOverlay');
+      game.resumeEngine();
+    });
+  }
+
+  void reset() {
     game.currentLevel = 1;
     game.teamManager.clear();
     game.bossManager.reset();
-    game.router.pushReplacementNamed('menu');
+
     phase = GamePhase.init;
+  }
+
+  void restartRun() {
+    reset();
+    phase = GamePhase.restarting;
   }
 
   bool get isCombatReady => phase == GamePhase.idle;

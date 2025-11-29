@@ -1,10 +1,12 @@
 import 'package:everfight/game/game_phase.dart';
 import 'package:everfight/logic/game_class.dart';
+import 'package:everfight/logic/statistics_manager.dart';
 import 'package:everfight/models/boss.dart';
 import 'package:everfight/models/monster.dart';
 import 'package:everfight/util/size_utils.dart';
 import 'package:everfight/widgets/boss_widget.dart';
 import 'package:everfight/widgets/monster_widget.dart';
+import 'package:everfight/widgets/pause_button.dart';
 import 'package:flame/components.dart';
 import 'package:flame/flame.dart';
 import 'package:flutter/material.dart';
@@ -36,12 +38,13 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
   Future<void> onMount() async {
     super.onMount();
 
+    addPauseButton();
+
     game.teamManager.addListener(refreshTeamUI);
-    // Ensure the run is initialized so we know the current level and background.
+
     await _initRun();
 
-    // Create and show the level indicator top-left after the scene has been initialized
-    // so it is drawn above the background.
+    // Create and show the level indicator after the scene has been initialized
     _createLevelText();
   }
 
@@ -51,7 +54,44 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
     super.onRemove();
   }
 
+  void addPauseButton() {
+    var pauseButton = PauseButton(
+      onPressed: () {
+        game.pauseEngine();
+        game.showPauseMenu();
+      },
+    );
+    pauseButton.priority = 10;
+
+    add(pauseButton);
+  }
+
   Future<void> _initRun() async {
+    var countMonsterWidgets = children.whereType<MonsterWidget>().length;
+    if (countMonsterWidgets > 0) {
+      if (debugMode) {
+        print('GameScene already initialized with $countMonsterWidgets monster widgets, skipping _initRun.');
+      }
+      return;
+    }
+
+    removeAll(children);
+    addPauseButton();
+
+    isAnimating = false;
+    turnQueue.clear();
+    currentTurnIndex = 0;
+
+    if (game.currentLevel != 1 || game.teamManager.team.isNotEmpty) {
+      boss = game.bossManager.currentBoss ?? game.bossManager.generateNextBoss(game.currentLevel);
+      await _loadBackground();
+      _renderTeam();
+      _renderBoss();
+
+      game.phaseController.onTeamSelected();
+      return;
+    }
+
     game.phaseController.startNewRun();
 
     boss = game.bossManager.generateNextBoss(game.currentLevel);
@@ -61,25 +101,23 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
   }
 
   void _createLevelText() {
-  final fontSize = levelFontSize; // reasonable default; scaled sizes can be used if desired
+    final fontSize = levelFontSize;
     levelText = TextComponent(
       text: 'Level ${game.currentLevel}',
       textRenderer: _textPaintForLevel(game.currentLevel, fontSize),
       anchor: Anchor.topRight,
     )
       ..position = Vector2(game.size.x - 8, 8)
-      ..priority = 100; // ensure it's on top
+      ..priority = 100;
 
     add(levelText);
   }
 
   void _updateLevelText() {
     try {
-  levelText.text = 'Level ${game.currentLevel}';
-  // refresh renderer to reflect new level glow/color
-  levelText.textRenderer = _textPaintForLevel(game.currentLevel, levelFontSize);
+      levelText.text = 'Level ${game.currentLevel}';
+      levelText.textRenderer = _textPaintForLevel(game.currentLevel, levelFontSize);
     } catch (e) {
-      // If levelText isn't ready or an error occurs, ignore silently.
       if (debugMode) {
         print('Could not update level text: $e');
       }
@@ -87,36 +125,27 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
   }
 
   TextPaint _textPaintForLevel(int level, double fontSize) {
-    // Use MAX_BOSS_COUNT to compute progression (0.0 - 1.0). If MAX_BOSS_COUNT is 0 fall back to 1.
     final maxLevel = (MAX_BOSS_COUNT <= 0) ? 1 : MAX_BOSS_COUNT;
     final progress = (level / maxLevel).clamp(0.0, 1.0);
 
-    // Keep the text itself white; the glow will carry the color/gradient.
     final baseColor = Colors.white;
 
-    // Gradient endpoints for the glow (cool -> warm).
-    final startColor = HSVColor.fromAHSV(1.0, 200, 0.9, 0.9).toColor(); // blue-cyan
-    final endColor = HSVColor.fromAHSV(1.0, 40, 0.95, 1.0).toColor(); // yellow-orange
+    final startColor = HSVColor.fromAHSV(1.0, 200, 0.9, 0.9).toColor();
+    final endColor = HSVColor.fromAHSV(1.0, 40, 0.95, 1.0).toColor();
 
-    // Determine the main glow color by progress along the gradient.
     final mainGlow = Color.lerp(startColor, endColor, progress) ?? startColor;
 
-    // Glow intensity & spread increase with progress.
     final glowIntensity = (1.0 + progress * 3.0).clamp(1.0, 4.0);
 
-    // Create layered shadows to mimic a soft, colored glow. Layers closer to text are brighter
-    // and smaller; outer layers are larger and more diffuse.
     final layers = 6;
     final shadows = <Shadow>[];
     for (var i = 0; i < layers; i++) {
       final t = i / (layers - 1);
       final blur = (2.0 + t * 18.0) * glowIntensity;
 
-      // opacity depends on both progress and layer position; inner layers slightly stronger
       final layerBase = 0.3 * (1 - t) + 0.06;
       final opacity = (layerBase * (0.6 + progress * 0.8)).clamp(0.02, 0.95);
 
-      // Mix a bit of the start/end based on layer to create a radial-like gradient
       final layerColor = Color.lerp(mainGlow, startColor, (1 - t) * 0.25)!.withOpacity(opacity);
 
       shadows.add(Shadow(color: layerColor, blurRadius: blur, offset: Offset(0, 0)));
@@ -130,6 +159,12 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
     );
 
     return TextPaint(style: textStyle);
+  }
+
+  Future<void> _restartRun() async {
+    removeAll(children);
+    addPauseButton();
+    _initRun();
   }
 
   Future<void> _loadBackground() async {
@@ -171,7 +206,14 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
 
     final phase = game.phaseController.phase;
 
+    if (phase == GamePhase.restarting) {
+      await _restartRun();
+      return;
+    }
+
     if (phase == GamePhase.selecting) return;
+    if (phase == GamePhase.victory) return;
+    if (phase == GamePhase.defeat) return;
 
     if (phase == GamePhase.idle) {
       _startTurnOrder();
@@ -180,7 +222,7 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
     if (isAnimating) return;
 
     timer += dt;
-    if (timer > 0.2) {
+    if (timer > 0.5) {
       timer = 0;
       _runNextTurn();
     }
@@ -239,6 +281,7 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
     monsterWidget.attack(
       target: bossWidget,
       applyDamage: () {
+        StatisticsManager().recordDamageDealt(monster.name, monster.baseAttack);
         bossWidget.takeDamage(monster.baseAttack);
       },
       onAttackFinished: () {
@@ -278,11 +321,13 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
     bossWidget.attack(
       target: victimWidget,
       applyDamage: () {
+        StatisticsManager().recordDamageTaken(boss.attack);
         victimWidget.takeDamage(boss.attack);
       },
       onAttackFinished: () {
         isAnimating = false;
         if (victim.health <= 0) {
+          StatisticsManager().recordMonsterDeath(victim.name);
           final aliveMonsters = game.teamManager.team.where((m) => m.health > 0).toList();
           if (aliveMonsters.isEmpty) {
             _onDefeat();
@@ -312,15 +357,14 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
   }
 
   void _onVictory() {
+    StatisticsManager().recordBossDefeated(boss.element);
     game.phaseController.victory(() {
       boss = game.bossManager.generateNextBoss(game.currentLevel);
       _loadBackground();
       var bossWidget = children.whereType<BossWidget>().first;
       remove(bossWidget);
 
-      // add new boss widget
       _renderBoss();
-      // Update the level label in case the game's level changed
       _updateLevelText();
     });
   }
@@ -332,7 +376,6 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
   void refreshTeamUI() {
     removeWhere((c) => c is MonsterWidget);
     _renderTeam();
-    // reset turn order (workaround --> currently sometimes buggy behavior on replace/skip)
     turnQueue.clear();
     currentTurnIndex = 0;
   }

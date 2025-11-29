@@ -13,7 +13,6 @@ class BossWidget extends PositionComponent {
   Boss boss;
   SpriteComponent? _spriteComponent;
   late HealthBarComponent _hpBubble;
-  late TextPaint _textPaint;
   @override
   final double width;
   @override
@@ -28,16 +27,6 @@ class BossWidget extends PositionComponent {
 
   @override
   Future<void> onLoad() async {
-    _textPaint = TextPaint(
-      style: const TextStyle(fontSize: 12, color: Colors.white, fontWeight: FontWeight.bold, shadows: [
-        Shadow(
-          offset: Offset(1, 1),
-          blurRadius: 2,
-          color: Colors.black,
-        ),
-      ]),
-    );
-
     Image image = Flame.images.fromCache(boss.imagePath);
     Sprite sprite = Sprite(image);
 
