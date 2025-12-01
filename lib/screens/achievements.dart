@@ -15,6 +15,7 @@ class AchievementsScreen extends StatelessWidget {
   });
 
   double _progress(Achievement a) {
+    if (a.unlocked) return 1.0;
     final current = stats.getStatValue(a.condition.stat);
     final target = a.condition.value;
 
@@ -40,46 +41,49 @@ class AchievementsScreen extends StatelessWidget {
           onPressed: () => Navigator.pop(context),
         ),
       ),
-      body: ListView.builder(
-        itemCount: sorted.length,
-        itemBuilder: (context, i) {
-          final a = sorted[i];
-          var p = _progress(a);
+      body: SafeArea(
+        child: ListView.builder(
+          itemCount: sorted.length,
+          itemBuilder: (context, i) {
+            final a = sorted[i];
+            var p = _progress(a);
 
-          if (a.unlocked) {
-            p = 1.0;
-          }
+            if (a.unlocked) {
+              p = 1.0;
+            }
 
-          return Card(
-            margin: const EdgeInsets.all(12),
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(a.title, style: const TextStyle(fontSize: 18)),
-                      if (a.unlocked)
-                        const Icon(Icons.check_circle, color: Colors.green),
-                    ],
-                  ),
-                  const SizedBox(height: 6),
-                  Text(a.description),
-                  const SizedBox(height: 10),
-                  LinearProgressIndicator(
-                    value: p,
-                    minHeight: 12,
-                    backgroundColor: Colors.grey.shade300,
-                  ),
-                  const SizedBox(height: 6),
-                  Text("${(p * 100).toStringAsFixed(0)}%"),
-                ],
+            return Card(
+              color: a.unlocked ? Colors.green.shade900.withValues(alpha: 0.3) : null,
+              margin: const EdgeInsets.all(12),
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(a.title, style: const TextStyle(fontSize: 18)),
+                        if (a.unlocked)
+                          const Icon(Icons.check_circle, color: Colors.green),
+                      ],
+                    ),
+                    const SizedBox(height: 6),
+                    Text(a.description),
+                    if (!isUnlockableScreen) const SizedBox(height: 10),
+                    if (!isUnlockableScreen) LinearProgressIndicator(
+                      value: p,
+                      minHeight: 12,
+                      backgroundColor: Colors.grey.shade300,
+                    ),
+                    const SizedBox(height: 6),
+                    Text("${(p * 100).toStringAsFixed(0)}%"),
+                  ],
+                ),
               ),
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }
