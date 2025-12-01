@@ -10,6 +10,7 @@ import 'package:flame/game.dart';
 import 'package:flame/input.dart';
 import 'package:flame/flame.dart';
 import 'package:flutter/material.dart' hide Route, Element;
+import 'package:everfight/game/scaling.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,9 +26,11 @@ void main() async {
         child: GameWidget(
           game: RogueliteGame(),
           overlayBuilderMap: {
-            'MonsterSelectionOverlay': (context, game) => MonsterSelectionOverlay(game: game as RogueliteGame),
+            'MonsterSelectionOverlay':
+                (context, game) =>
+                    MonsterSelectionOverlay(game: game as RogueliteGame),
           },
-        )
+        ),
       ),
     ),
   );
@@ -56,12 +59,51 @@ class RogueliteGame extends FlameGame with HasKeyboardHandlerComponents {
   }
 
   void _initMonsters() {
-    bosses.addAll([
-      Monster(name: 'Flamurai', baseHealth: 120, baseAttack: 2, element: Element.fire, imagePath: 'boss_fire.jpeg'),
-      Monster(name: 'Frostfang', baseHealth: 150, baseAttack: 10, element: Element.water, imagePath: 'boss_water.jpeg'),
-      Monster(name: 'Terra Titan', baseHealth: 180, baseAttack: 20, element: Element.earth, imagePath: 'boss_earth.jpeg'),
-      Monster(name: 'Birdinator', baseHealth: 180, baseAttack: 20, element: Element.air, imagePath: 'boss_air.jpeg'),
-    ]);
+    void _initMonsters() {
+      final baseBosses = [
+        Monster(
+          name: 'Flamurai',
+          baseHealth: 120,
+          baseAttack: 2,
+          baseDefense: 4,
+          rarity: "rare",
+          element: Element.fire,
+          imagePath: 'boss_fire.jpeg',
+        ),
+        Monster(
+          name: 'Frostfang',
+          baseHealth: 150,
+          baseAttack: 10,
+          baseDefense: 6,
+          rarity: "rare",
+          element: Element.water,
+          imagePath: 'boss_water.jpeg',
+        ),
+        Monster(
+          name: 'Terra Titan',
+          baseHealth: 180,
+          baseAttack: 20,
+          baseDefense: 10,
+          rarity: "epic",
+          element: Element.earth,
+          imagePath: 'boss_earth.jpeg',
+        ),
+        Monster(
+          name: 'Birdinator',
+          baseHealth: 180,
+          baseAttack: 20,
+          baseDefense: 8,
+          rarity: "epic",
+          element: Element.air,
+          imagePath: 'boss_air.jpeg',
+        ),
+      ];
+
+      // Gegner skalieren nach Boss-Level
+      for (int i = 0; i < baseBosses.length; i++) {
+        bosses.add(Scaling.scaleBoss(baseBosses[i], i));
+      }
+    }
   }
 
   void showMonsterSelection() {

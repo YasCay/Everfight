@@ -7,9 +7,18 @@ class Monster {
   int health;
   final int baseAttack;
   final Element element;
+  final String rarity;
+  final int baseDefense;
 
-  Monster({required this.name, required this.imagePath, required this.baseHealth, required this.baseAttack, required this.element})
-      : health = baseHealth;
+  Monster({
+    required this.name,
+    required this.imagePath,
+    required this.baseHealth,
+    required this.baseAttack,
+    required this.element,
+    this.rarity = "common",
+    this.baseDefense = 0,
+  }) : health = baseHealth;
 
   factory Monster.fromJson(Map<String, dynamic> json) {
     return Monster(
@@ -17,7 +26,12 @@ class Monster {
       imagePath: json['imagePath'],
       baseHealth: json['baseHealth'],
       baseAttack: json['baseAttack'],
-      element: Element.values.firstWhere((e) => e.toString() == 'Element.${json['element']}'),
+      rarity: json["rarity"] ?? "common",
+      baseDefense: json["baseDefense"] ?? 0,
+
+      element: Element.values.firstWhere(
+        (e) => e.toString() == 'Element.${json['element']}',
+      ),
     );
   }
 
@@ -27,6 +41,8 @@ class Monster {
       'imagePath': imagePath,
       'baseHealth': baseHealth,
       'baseAttack': baseAttack,
+      'baseDefense': baseDefense,
+      'rarity': rarity,
       'element': element.toString().split('.').last,
     };
   }
