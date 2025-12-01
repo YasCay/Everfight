@@ -57,7 +57,9 @@ class RogueliteGame extends FlameGame with HasKeyboardHandlerComponents {
     phaseController = GamePhaseController(this);
 
     GameState gameState = await LocalStorage.loadState();
-    print('Loaded game state: $gameState');
+    if (debugMode) {
+      print('Loaded game state: $gameState');
+    }
     teamManager.loadState(gameState);
     bossManager.loadState(gameState);
     currentLevel = gameState.currentLevel;

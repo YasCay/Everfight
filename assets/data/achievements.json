@@ -14,10 +14,38 @@
     "unlock": null
   },
   {
+    "id": "level_reached_50",
+    "title": "Halfway There",
+    "description": "Reach level 50 in a single run.",
+    "condition": { "stat": "highestLevelReached", "operator": ">=", "value": 50 },
+    "unlock": null
+  },
+  {
     "id": "first_time_winner",
     "title": "Win your first run.",
     "description": "Defeat 100 bosses in a single run.",
     "condition": { "stat": "runsWon", "operator": ">=", "value": 1 },
+    "unlock": null
+  },
+  {
+    "id": "damage_dealer_1m",
+    "title": "Million Damage Dealer",
+    "description": "Deal a total of 1,000,000 damage.",
+    "condition": { "stat": "totalDamageDealt", "operator": ">=", "value": 1000000 },
+    "unlock": null
+  },
+  {
+    "id": "damage_taker_500k",
+    "title": "The Punching Bag",
+    "description": "Take a total of 500,000 damage.",
+    "condition": { "stat": "totalDamageTaken", "operator": ">=", "value": 500000 },
+    "unlock": null
+  },
+  {
+    "id": "unstoppable_run",
+    "title": "Unstoppable",
+    "description": "Win 10 runs in total.",
+    "condition": { "stat": "runsWon", "operator": ">=", "value": 10 },
     "unlock": null
   },
   {

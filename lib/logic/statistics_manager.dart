@@ -2,6 +2,7 @@ import 'package:everfight/logic/achievement_manager.dart';
 import 'package:everfight/models/enums.dart';
 import 'package:everfight/models/statistics.dart';
 import 'package:everfight/util/local_storage.dart';
+import 'package:everfight/util/settings.dart';
 
 class StatisticsManager {
   static final StatisticsManager _instance = StatisticsManager._internal();
@@ -16,7 +17,9 @@ class StatisticsManager {
     if (_initialized) return;
 
     statistics = await LocalStorage.loadStatistics() ?? Statistics();
-    print('Loaded statistics: $statistics');
+    if (DEBUG_MODE) {
+      print('Loaded statistics: $statistics');
+    }
     _initialized = true;
   }
 

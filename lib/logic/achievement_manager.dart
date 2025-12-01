@@ -7,6 +7,7 @@ import 'package:everfight/models/enums.dart';
 import 'package:everfight/models/statistics.dart';
 import 'package:everfight/models/unlockable_action.dart';
 import 'package:everfight/util/local_storage.dart';
+import 'package:everfight/util/settings.dart';
 import 'package:flutter/services.dart';
 
 class AchievementManager {
@@ -164,7 +165,9 @@ class AchievementManager {
   void _applyReward(String rewardType, dynamic data) {
     switch (rewardType) {
       case 'tier_unlock':
-        print("Unlocked tier: $data");
+        if (DEBUG_MODE) {
+          print("Unlocked tier: $data");
+        }
         _unlockTier(data);
         break;
     }
