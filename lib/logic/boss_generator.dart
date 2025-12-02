@@ -24,8 +24,14 @@ class BossGenerator {
       randomFactor = (_rng.nextDouble() * 2 - 1) * BOSS_RANDOM_STAT_VARIATION;
     }
 
-    final double hpFactor = pow(1 + hpGrowth, level - 1).toDouble();
-    final double atkFactor = pow(1 + atkGrowth, level - 1).toDouble();
+    double hpFactor = pow(1 + hpGrowth, level - 1).toDouble();
+    double atkFactor = pow(1 + atkGrowth, level - 1).toDouble();
+
+    if (level > 49) {
+      double newLevel = 49 + pow(level - 1 - 49, 0.55).toDouble();
+      hpFactor = pow(1 + hpGrowth, newLevel).toDouble();
+      atkFactor = pow(1 + atkGrowth, newLevel).toDouble();
+    }
 
     double newHP = tpl.baseHealth * hpFactor * (1 + randomFactor);
     double newATK = tpl.baseAttack * atkFactor * (1 + randomFactor);
