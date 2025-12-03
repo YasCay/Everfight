@@ -54,7 +54,7 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
   }
 
   void addPauseButton() {
-    if (pauseButton != null || children.contains(pauseButton)) {
+    if (pauseButton != null && children.contains(pauseButton)) {
       return;
     }
 
