@@ -100,8 +100,8 @@ class AchievementManager {
         (e) => e.toString().split('.').last == elementName,
       );
 
-      final bosses = s.bossesDefeatedByElement[element] ?? 0;
-      final hasTier3 = game.teamManager.team.any((m) => m.tier == 3 && m.element == element);
+      final bosses = s.bossesDefeatedByElementRun[element] ?? 0;
+      final hasTier3 = game.teamManager.team.any((m) => (m.tier == 3 && m.element == element));
 
       return (bosses >= 12 && hasTier3) ? 1 : 0;
     }
