@@ -18,8 +18,8 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
   late Boss boss;
   double timer = 0;
   bool isAnimating = false;
-  late TextComponent levelText;
-  late PauseButton pauseButton;
+  TextComponent? levelText;
+  PauseButton? pauseButton;
   final double levelFontSize = 24.0;
 
   List<dynamic> turnQueue = [];
@@ -54,6 +54,10 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
   }
 
   void addPauseButton() {
+    if (pauseButton != null || children.contains(pauseButton)) {
+      return;
+    }
+
     var position = Vector2(
       game.size.x - SizeUtils.scalePercentage(game.size.x, 15) - 20,
       20,
@@ -66,9 +70,9 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
       },
       position: position,
     );
-    pauseButton.priority = 10;
+    pauseButton!.priority = 10;
 
-    add(pauseButton);
+    add(pauseButton!);
   }
 
   Future<void> _initRun() async {
@@ -109,6 +113,11 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
   }
 
   void _createLevelText() {
+    if (children.contains(levelText)) {
+      _updateLevelText();
+      return;
+    }
+
     final fontSize = levelFontSize;
     final position = Vector2(
       SizeUtils.scalePercentage(game.size.x, 15),
@@ -123,13 +132,13 @@ class GameScene extends Component with HasGameReference<RogueliteGame> {
       ..position = position
       ..priority = 100;
 
-    add(levelText);
+    add(levelText!);
   }
 
   void _updateLevelText() {
     try {
-      levelText.text = 'Level ${game.currentLevel}';
-      levelText.textRenderer =
+      levelText!.text = 'Level ${game.currentLevel}';
+      levelText!.textRenderer =
           _textPaintForLevel(game.currentLevel, levelFontSize);
     } catch (e) {
       if (debugMode) {

@@ -91,14 +91,19 @@ class AchievementManager {
 
       int level = game.currentLevel - 1;
 
-      return (count >= 2 && level >= 50) ? 1 : 0;
+      return (count >= 2 && level >= 28) ? 1 : 0;
     }
 
-    if (path.startsWith('custom.hasTier3.fireAndTenBosses')) {
-      final bosses = s.bossesDefeatedByElement[Element.fire] ?? 0;
-      final hasTier3 = game.teamManager.team.any((m) => m.tier == 3 && m.element == Element.fire);
+    if (path.startsWith('custom.hasTier3.')) {
+      final elementName = path.split('.')[2];
+      final element = Element.values.firstWhere(
+        (e) => e.toString().split('.').last == elementName,
+      );
 
-      return (bosses >= 10 && hasTier3) ? 1 : 0;
+      final bosses = s.bossesDefeatedByElement[element] ?? 0;
+      final hasTier3 = game.teamManager.team.any((m) => m.tier == 3 && m.element == element);
+
+      return (bosses >= 12 && hasTier3) ? 1 : 0;
     }
 
 

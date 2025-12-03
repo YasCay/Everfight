@@ -79,57 +79,57 @@
   {
     "id": "unlock_fire_tier_3",
     "title": "Fire Tier 3",
-    "description": "Reach level 50 with at least two Tier 2 Fire monsters.",
+    "description": "Reach level 28 with at least two Tier 2 Fire monsters.",
     "condition": { "stat": "custom.hasTwoTier2.fire", "operator": "==", "value": 1 },
     "unlock": { "type": "reward", "reward_type": "tier_unlock", "data": "fire_3" }
   },
   {
     "id": "unlock_air_tier_3",
     "title": "Air Tier 3",
-    "description": "Reach level 50 with at least two Tier 2 Air monsters.",
+    "description": "Reach level 28 with at least two Tier 2 Air monsters.",
     "condition": { "stat": "custom.hasTwoTier2.air", "operator": "==", "value": 1 },
     "unlock": { "type": "reward", "reward_type": "tier_unlock", "data": "air_3" }
   },
   {
     "id": "unlock_water_tier_3",
     "title": "Water Tier 3",
-    "description": "Reach level 50 with at least two Tier 2 Water monsters.",
+    "description": "Reach level 28 with at least two Tier 2 Water monsters.",
     "condition": { "stat": "custom.hasTwoTier2.water", "operator": "==", "value": 1 },
     "unlock": { "type": "reward", "reward_type": "tier_unlock", "data": "water_3" }
   },
   {
     "id": "unlock_earth_tier_3",
     "title": "Earth Tier 3",
-    "description": "Reach level 50 with at least two Tier 2 Earth monsters.",
+    "description": "Reach level 28 with at least two Tier 2 Earth monsters.",
     "condition": { "stat": "custom.hasTwoTier2.earth", "operator": "==", "value": 1 },
     "unlock": { "type": "reward", "reward_type": "tier_unlock", "data": "earth_3" }
   },
   {
     "id": "unlock_fire_tier_4",
     "title": "Fire Tier 4",
-    "description": "Beat 10 Fire bosses and have at least one Tier 3 Fire monster.",
-    "condition": { "stat": "custom.hasTier3.fireAndTenBosses", "operator": "==", "value": 1 },
+    "description": "Beat 12 Fire bosses and have at least one Tier 3 Fire monster.",
+    "condition": { "stat": "custom.hasTier3.fireAndTwelveBosses", "operator": "==", "value": 1 },
     "unlock": { "type": "reward", "reward_type": "tier_unlock", "data": "fire_4" }
   },
   {
     "id": "unlock_air_tier_4",
     "title": "Air Tier 4",
-    "description": "Beat 10 Air bosses and have at least one Tier 3 Air monster.",
-    "condition": { "stat": "custom.hasTier3.airAndTenBosses", "operator": "==", "value": 1 },
+    "description": "Beat 12 Air bosses and have at least one Tier 3 Air monster.",
+    "condition": { "stat": "custom.hasTier3.airAndTwelveBosses", "operator": "==", "value": 1 },
     "unlock": { "type": "reward", "reward_type": "tier_unlock", "data": "air_4" }
   },
   {
     "id": "unlock_water_tier_4",
     "title": "Water Tier 4",
-    "description": "Beat 10 Water bosses and have at least one Tier 3 Water monster.",
-    "condition": { "stat": "custom.hasTier3.waterAndTenBosses", "operator": "==", "value": 1 },
+    "description": "Beat 12 Water bosses and have at least one Tier 3 Water monster.",
+    "condition": { "stat": "custom.hasTier3.waterAndTwelveBosses", "operator": "==", "value": 1 },
     "unlock": { "type": "reward", "reward_type": "tier_unlock", "data": "water_4" }
   },
   {
     "id": "unlock_earth_tier_4",
     "title": "Earth Tier 4",
-    "description": "Beat 10 Earth bosses and have at least one Tier 3 Earth monster.",
-    "condition": { "stat": "custom.hasTier3.earthAndTenBosses", "operator": "==", "value": 1 },
+    "description": "Beat 12 Earth bosses and have at least one Tier 3 Earth monster.",
+    "condition": { "stat": "custom.hasTier3.earthAndTwelveBosses", "operator": "==", "value": 1 },
     "unlock": { "type": "reward", "reward_type": "tier_unlock", "data": "earth_4" }
   }
 ]
